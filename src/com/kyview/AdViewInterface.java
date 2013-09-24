@@ -15,4 +15,12 @@ public interface AdViewInterface {
 	 */
 	
 	public void onDisplayAd();
+	
+	/**
+	 * 当广告被关闭时调用该函数.
+	 * 
+	 * 
+	 */
+	
+	public void onClosedAd();
 }

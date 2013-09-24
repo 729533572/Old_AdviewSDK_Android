@@ -75,8 +75,7 @@ public class MdotMAdapter extends AdViewAdapter implements MdotMActionListener {
 		  if(adViewLayout == null) {
 			  return;
 		  }
-		 // adViewLayout.removeAllViews();
-
+		  super.onSuccessed(adViewLayout, ration);
 		  adView.setVisibility(View.VISIBLE);	
 		  adViewLayout.adViewManager.resetRollover();
 		  adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView));
@@ -93,7 +92,8 @@ public class MdotMAdapter extends AdViewAdapter implements MdotMActionListener {
 		  if(adViewLayout == null) {
 			 return;
 		  } 
-		 adViewLayout.rotateThreadedPri(1);
+		  super.onFailed(adViewLayout, ration);
+		 //adViewLayout.rotateThreadedPri(1);
 		
 	}
 

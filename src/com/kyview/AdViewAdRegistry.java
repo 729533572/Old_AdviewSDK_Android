@@ -4,6 +4,7 @@ import android.util.SparseArray;
 
 import com.kyview.adapters.AdBaiduAdapter;
 import com.kyview.adapters.AdChinaAdapter;
+import com.kyview.adapters.AdFillAdapter;
 import com.kyview.adapters.AdMobAdapter;
 import com.kyview.adapters.AdTouchAdapter;
 import com.kyview.adapters.AdViewAdapter;
@@ -27,6 +28,7 @@ import com.kyview.adapters.MillennialAdapter;
 import com.kyview.adapters.MobWinAdapter;
 import com.kyview.adapters.MobiSageAdapter;
 import com.kyview.adapters.MomarkAdapter;
+import com.kyview.adapters.PunchBoxAdapter;
 import com.kyview.adapters.SmaatoAdapter;
 import com.kyview.adapters.SmartAdAdapter;
 import com.kyview.adapters.SuizongInterfaceAdapter;
@@ -39,6 +41,7 @@ import com.kyview.adapters.WqAdapter;
 import com.kyview.adapters.YoumiAdapter;
 import com.kyview.adapters.YunYunAdapter;
 import com.kyview.adapters.ZestADZAdapter;
+import com.kyview.adapters.ZhiDianAdapter;
 //import com.kyview.adapters.AduuInterfaceAdapter;
 
 
@@ -101,6 +104,9 @@ public class AdViewAdRegistry {
 		try {YoumiAdapter.load(this);}catch(Error e){}
 		try {ZestADZAdapter.load(this);}catch(Error e){}	
 		try {YunYunAdapter.load(this);}catch(Error e){}	
+		try {PunchBoxAdapter.load(this);}catch(Error e){}	
+		try {AdFillAdapter.load(this);}catch(Error e){}	
+		try {ZhiDianAdapter.load(this);}catch(Error e){}
 	}
 	
 	public void registerClass(Integer adType, Class<? extends AdViewAdapter> adapterClass) {

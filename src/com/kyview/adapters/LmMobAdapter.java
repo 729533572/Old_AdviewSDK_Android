@@ -55,7 +55,7 @@ public class LmMobAdapter extends AdViewAdapter implements LMAdListener{
 		}
 		
 		 Hashtable<String, String> ht = new Hashtable<String, String>();
-		 ht.put("channelID", "adview_1.9.3");
+		 ht.put("channelID", AdViewUtil.ADVIEW);
 
 		 if(AdViewTargeting.getRunMode()==RunMode.TEST) 
 			adView = new ImmobView(activity, "dc483fd9e819fbc9ecc06594ddc3d96a", ht);
@@ -69,6 +69,7 @@ public class LmMobAdapter extends AdViewAdapter implements LMAdListener{
 		layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 		adViewLayout.addView(adView, layoutParams);
+		adViewLayout.addCloseButton(adViewLayout);
 	}
 
 	@Override
@@ -86,7 +87,7 @@ public class LmMobAdapter extends AdViewAdapter implements LMAdListener{
 		if(adViewLayout == null) {
 			return;
 		}
-
+		super.onSuccessed(adViewLayout, ration);
 		adViewLayout.adViewManager.resetRollover();
 		//adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView));
 		adViewLayout.rotateThreadedDelayed();
@@ -106,7 +107,8 @@ public class LmMobAdapter extends AdViewAdapter implements LMAdListener{
 		if(adViewLayout == null) {
 			return;
 		}
-		adViewLayout.rotateThreadedPri(1);
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);
 		
 	}
 	

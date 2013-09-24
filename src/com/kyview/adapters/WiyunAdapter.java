@@ -74,6 +74,7 @@ public class WiyunAdapter extends AdViewAdapter implements AdListener{
 		RelativeLayout.LayoutParams layoutParams;
 		layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		adViewLayout.addView(ad, layoutParams);
+		adViewLayout.addCloseButton(adViewLayout);
 		
 	}
 
@@ -97,7 +98,8 @@ public void onAdLoadFailed()
 	if(adViewLayout == null) {
 		return;
 	}
-	adViewLayout.rotateThreadedPri(1);	
+	super.onFailed(adViewLayout, ration);
+	//adViewLayout.rotateThreadedPri(1);	
 }
 
 public void onAdLoaded()
@@ -109,7 +111,7 @@ public void onAdLoaded()
 	if(adViewLayout == null) {
 		return;
 	}
-
+	super.onSuccessed(adViewLayout, ration);
 	adViewLayout.adViewManager.resetRollover();
 	//adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, ad));
 	adViewLayout.rotateThreadedDelayed();

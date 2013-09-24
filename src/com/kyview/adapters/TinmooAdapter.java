@@ -56,7 +56,7 @@ public class TinmooAdapter extends AdViewAdapter{
         adViewLayout.adViewManager.resetRollover();
 	    adViewLayout.handler.post(new AdViewLayout.ViewAdRunnable(adViewLayout, adView));
 	    adViewLayout.rotateThreadedDelayed();
-		
+		super.onSuccessed(adViewLayout, ration);
 	}
 
 	

@@ -2,6 +2,9 @@ package com.kyview;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,7 +15,6 @@ import android.widget.LinearLayout;
 
 import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.AdViewTargeting.UpdateMode;
-//import com.kyview.AdViewTargeting.Channel;
 
 
 
@@ -35,7 +37,7 @@ public class Invoker extends Activity implements AdViewInterface ,OnClickListene
         normal.setOnClickListener(this);
         AdViewTargeting.setUpdateMode(UpdateMode.EVERYTIME);
         AdViewTargeting.setRunMode(RunMode.TEST);
-
+//        AdViewTargeting.setStatusMode(StatusMode.CANCLOSED);
     }
 
 	
@@ -51,6 +53,11 @@ public class Invoker extends Activity implements AdViewInterface ,OnClickListene
 		// TODO Auto-generated method stub
 		
 	}
+//	@Override
+//	public void onClosedAd() {
+//		// TODO Auto-generated method stub
+//		AdViewUtil.logInfo("onClickClosed");
+//	}
 
 
 
@@ -85,66 +92,39 @@ public class Invoker extends Activity implements AdViewInterface ,OnClickListene
 		Log.i("onDestroy", "onDestroy");
 //		adViewLayout.release();
 	}
-//	public void amazon_proc() {
-//		// TODO Auto-generated method stub
-//		Log.d("AdViewSample", "Into zmazon");
-//
-//		//娴嬭瘯妯″紡
-//        AdRegistration.enableLogging(this, true);
-//        AdRegistration.enableTesting(this, true);
-//        AdRegistration.setAppKey(this, "sample-app-v1_pub-2");
-//        
-//		//鍒涘缓amazon鐨刟dview瀹炰緥	
-//        AdLayout adView = new AdLayout(this, AdSize.AD_SIZE_320x50);
-//		//鎸囧畾渚﹀惉鎺ュ彛
-//		adView.setListener(new AdListener() {
-//			
-//			 @Override
-//			    public void onAdFailedToLoad(AdLayout view, AdError error) {
-//			        Log.w("AdViewSample", "Ad failed to load. Code: " + error.getResponseCode() + ", Message: " + error.getResponseMessage());
-//
-//					//澶辫触涔嬪悗寮�璇锋眰涓嬩竴涓箍鍛�//					adViewLayout.adViewManager.resetRollover_pri();
-//					adViewLayout.rotateThreadedPri();	        
-//			    }
-//
-//			    @Override
-//			    public void onAdLoaded(AdLayout view, AdProperties adProperties) {
-//			        Log.d("AdViewSample", adProperties.getAdType().toString() + " Ad loaded successfully.");
-//
-//					//鍙栨秷渚﹀惉鎺ュ彛
-//			        view.setListener(null);
-//
-//					//骞垮憡璇锋眰鎴愬姛涔嬪悗锛屽惎鍔ㄥ畾鏃跺櫒锛屽埌鏃跺悗璇锋眰涓嬩竴涓箍鍛�//					adViewLayout.reportImpression();
-//					adViewLayout.adViewManager.resetRollover();
-//					adViewLayout.rotateThreadedDelayed();	        
-//			    }
-//
-//			
-//			@Override
-//			public void onAdExpanded(AdLayout arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			@Override
-//			public void onAdCollapsed(AdLayout arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//		});
-//
-//		//娓呴櫎褰撳墠鐨剉iew
-//		adViewLayout.removeAllViews();
-//		
-//		RelativeLayout.LayoutParams layoutParams;
-//		layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-//
-//		//娣诲姞amazon鐨剉iew鍒板綋鍓嶇殑adlayout涓�//		adViewLayout.addView(adView, layoutParams);
-//		
-//		AdTargetingOptions adOptions = new AdTargetingOptions();
-//        adView.loadAd(adOptions);
-//	}
 
+
+
+	//可在该方法中处理广告关闭事件
+	@Override
+	public void onClosedAd() {
+		//如果想立即关闭直接调用：
+		//adViewLayout.setClosed(true);
+		
+		//弹出对话框，要求二次确认
+		Dialog dialog=new AlertDialog.Builder(this).setTitle("确定要关闭广告？")
+				.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						//无论是否关闭广告，请务必调用下一行方法，否则广告将停止切换
+						//传入false，广告将不会关闭
+						adViewLayout.setClosed(false);
+					}
+				})
+				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						//无论是否关闭广告，请务必调用下一行方法，否则广告将停止切换
+						//传入true，广告将关闭
+						adViewLayout.setClosed(true);
+					}
+				}).show();
+		//防止误点击关闭对话框，可能使 adViewLayout.setClosed(boolean);不被调用
+		dialog.setCanceledOnTouchOutside(false);
+	}
 	
+
 	
 }

@@ -76,14 +76,16 @@ public class AdTouchAdapter extends AdViewAdapter implements AdListener{
 
 	@Override
 	public void failedReceiveAd(AdView arg0) {
-		// TODO Auto-generated method stub
 		AdViewUtil.logInfo("AdTouch fail");
 		AdManager.setAdListener(null);
+		AdViewLayout adViewLayout=adViewLayoutReference.get();
+		if(adViewLayout==null)
+			return;
+		super.onFailed(adViewLayout, ration);
 	}
 
 	@Override
 	public void receiveAd(AdView arg0) {
-		// TODO Auto-generated method stub
 		AdViewUtil.logInfo("AdTouch success");
 		AdManager.setAdListener(null);
 
@@ -91,6 +93,7 @@ public class AdTouchAdapter extends AdViewAdapter implements AdListener{
 		if(adViewLayout == null) {
 			return;
 		}
+		super.onSuccessed(adViewLayout, ration);
 		adViewLayout.reportImpression(); 
 	}
 

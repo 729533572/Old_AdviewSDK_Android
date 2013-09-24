@@ -80,7 +80,6 @@ public class YoumiAdapter extends AdViewAdapter implements AdViewLinstener{
 		  }
 
 		adView.setAdListener(null);
-
 		adViewLayout.reportImpression();
 		adViewLayout.adViewManager.resetRollover();
 		adViewLayout.rotateThreadedDelayed();
@@ -90,6 +89,12 @@ public class YoumiAdapter extends AdViewAdapter implements AdViewLinstener{
 	public void onReceivedAd(AdView adView)
 	{
 		AdViewUtil.logInfo("onReceivedAd");
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		  if(adViewLayout == null) {
+			  return;
+		  }
+		  super.onSuccessed(adViewLayout, ration);
+		
 	}
 	
 	@Override
@@ -102,8 +107,8 @@ public class YoumiAdapter extends AdViewAdapter implements AdViewLinstener{
 		if(adViewLayout == null) {
 			return;
 		}
-
-		adViewLayout.rotateThreadedPri(1);
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);
 	}
 
 

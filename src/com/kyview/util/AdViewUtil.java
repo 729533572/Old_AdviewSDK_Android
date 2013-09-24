@@ -2,8 +2,13 @@ package com.kyview.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -25,12 +30,27 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
 
-import com.kyview.AdViewManager;
-import com.kyview.AdViewTargeting;
-import com.kyview.AdViewTargeting.RunMode;
-
 public class AdViewUtil {
 	public static final boolean TEST_SERVER = false; // false
+	public static int configVer = 0;
+	public static final String COUNTSHOW = "show";
+	public static final String COUNTREQUEST = "req";
+	public static final String COUNTCLICK = "click";
+	public static final String COUNTFAIL = "fail";
+	public static final String COUNTSUCCESS = "suc";
+
+	public static final int REQUESTTIMEOUT = 25 * 1000;
+
+	public static final String UPLOADREQ_TIME = "uploadreq_time";
+	public static final String UPLOADINTERVAL_TIME = "uploadinterval_time";
+	public static final String NEXTUPLOAD_TIME = "nextupload_time";
+
+	public final static String PREFS_STRING_MULTI = "multi";
+	public final static String PREFS_STRING_TIMESTAMP = "timestamp";
+
+	public static int adfill_count = 0;
+	public static int common_count = 0;
+	public static double adfill_precent = 0.1D;
 
 	public static String SERVER_HOST = "report.adview.cn";
 	public static String CONFIG_HOST = "config.adview.cn";
@@ -48,14 +68,16 @@ public class AdViewUtil {
 	// Don't change anything below this line
 	/***********************************************/
 
-	public static final int VERSION = 194;
+	public static final int VERSION = 200;
 
-	public static final String ADVIEW = "AdView SDK v1.9.4";
-
-	public static final String ADVIEW_VER = "1.9.4";
+	public static final String ADVIEW = "AdView SDK v2.0.0";
+	public static final String ADVIEW4YUNYUN = "FRADVIEW_2.0.0";
+	public static final String ADVIEW_VER = "2.0.0";
 
 	// Could be an enum, but this gives us a slight performance improvement
 	// abroad
+	public static final int NETWORK_TYPE_ADFILL = 997;
+
 	public static final int NETWORK_TYPE_ADMOB = 1;
 	public static final int NETWORK_TYPE_GREYSTRIP = 2;
 	public static final int NETWORK_TYPE_INMOBI = 3;
@@ -95,6 +117,9 @@ public class AdViewUtil {
 	// public static final int NETWORK_TYPE_YINGGAO=40;
 	public static final int NETWORK_TYPE_YUNYUN = 53;
 	// public static final int NETWORK_TYPE_YJF=54;
+	public static final int NETWORK_TYPE_PUNCHBOX = 57;
+
+	public static final int NETWORK_TYPE_ZHIDIAN = 58;
 
 	public static final int NETWORK_TYPE_CUSTOMIZE = 999;
 
@@ -106,7 +131,7 @@ public class AdViewUtil {
 	public static void initConfigUrls(String reportHost) {
 		urlConfig = "http://"
 				+ CONFIG_HOST
-				+ "/agent/agent1_android.php?appid=%s&appver=%d&client=0&simulator=%d&location=%s&time=%d&sdkver=%d";
+				+ "/agent/agent1_android.php?appid=%s&appver=%s&client=0&simulator=%d&location=%s&time=%d&sdkver=%d";
 
 		urlImpression = "http://"
 				+ reportHost
@@ -148,7 +173,7 @@ public class AdViewUtil {
 					mDensity = displayMetrics.density;
 				}
 			} catch (Exception e) {
-				Log.i(AdViewUtil.ADVIEW, e.toString());
+				logError("", e);
 				mDensity = 1.0D;
 			}
 		}
@@ -198,7 +223,7 @@ public class AdViewUtil {
 			while (ImsiStr.length() < 15)
 				ImsiStr.append("0");
 		} catch (Exception e) {
-			Log.i(AdViewUtil.ADVIEW, e.toString());
+			logError("", e);
 			ImsiStr.append("000000000000000");
 		}
 		return ImsiStr.toString();
@@ -215,7 +240,7 @@ public class AdViewUtil {
 			while (tmDevice.length() < 15)
 				tmDevice.append("0");
 		} catch (Exception e) {
-			Log.i(AdViewUtil.ADVIEW, e.toString());
+			logError("", e);
 		}
 
 		return tmDevice.toString().replace("null", "0000");
@@ -229,7 +254,7 @@ public class AdViewUtil {
 			WifiInfo localWifiInfo = localWifiManager.getConnectionInfo();
 			str = localWifiInfo.getMacAddress();
 		} catch (Exception e) {
-			Log.i(AdViewUtil.ADVIEW, e.toString());
+			logError("", e);
 		}
 		return str;
 	}
@@ -290,23 +315,23 @@ public class AdViewUtil {
 
 	/****************** Android的五种logcat输出的其中四种 *****************************/
 	public static void logWarn(String info, Throwable r) {
-		if (AdViewTargeting.getRunMode() == RunMode.TEST)
-			Log.w(AdViewUtil.ADVIEW, info, r);
+		// if (AdViewTargeting.getRunMode() == RunMode.TEST)
+		Log.w(AdViewUtil.ADVIEW, info, r);
 	}
 
 	public static void logDebug(String info) {
-		if (AdViewTargeting.getRunMode() == RunMode.TEST)
-			Log.d(AdViewUtil.ADVIEW, info);
+		// if (AdViewTargeting.getRunMode() == RunMode.TEST)
+		Log.d(AdViewUtil.ADVIEW, info);
 	}
 
 	public static void logError(String info, Throwable r) {
-		if (AdViewTargeting.getRunMode() == RunMode.TEST)
-			Log.e(AdViewUtil.ADVIEW, info, r);
+		// if (AdViewTargeting.getRunMode() == RunMode.TEST)
+		Log.e(AdViewUtil.ADVIEW, info, r);
 	}
 
 	public static void logInfo(String info) {
-		if (AdViewTargeting.getRunMode() == RunMode.TEST)
-			Log.i(AdViewUtil.ADVIEW, info);
+		// if (AdViewTargeting.getRunMode() == RunMode.TEST)
+		Log.i(AdViewUtil.ADVIEW, info);
 	}
 
 	public static void writeLogtoFile(String logName, String text) {
@@ -318,12 +343,15 @@ public class AdViewUtil {
 		FileWriter filerWriter = null;
 		BufferedWriter bufWriter = null;
 		File file = new File(Environment.getExternalStorageDirectory()
-				.toString() + "adview_log");
+				.getAbsolutePath() + File.separator + "adview_log");
 		if (!file.exists())
 			file.mkdirs();
 		try {
 			File files = new File(Environment.getExternalStorageDirectory()
-					.toString() + "adview_log" + logName + ".txt");
+					.getAbsolutePath()
+					+ File.separator
+					+ "adview_log"
+					+ File.separator + logName + ".txt");
 			if (!files.exists())
 				files.createNewFile();
 			// 后面这个参数代表是不是要接上文件中原来的数据，不进行覆盖
@@ -347,53 +375,166 @@ public class AdViewUtil {
 
 		}
 	}
-//	public static void storeInfo(Context context, String keyAdView,
-//			int rationName, String typeName) {
-//		String perfsMulti = null;
-//		boolean isfound = false;
-//		JSONArray jsonArray = null;
-//		JSONObject jsonMap = null;
-//		SharedPreferences adViewPrefs = context.getSharedPreferences(keyAdView,
-//				Context.MODE_PRIVATE);
-//		SharedPreferences.Editor editor = adViewPrefs.edit();
-//		try {
-//			perfsMulti = adViewPrefs.getString(
-//					AdViewManager.PREFS_STRING_MULTI, null);
-//			if (perfsMulti == null) {
-//				jsonMap = new JSONObject();
-//				jsonMap.put("type", rationName);
-//				jsonMap.put(typeName, 1);
-//			} else {
-//				jsonArray = new JSONArray(perfsMulti);
-//				for (int i = 0; i < jsonArray.length(); i++) {
-//					jsonMap = jsonArray.getJSONObject(i);
-//					if (jsonMap.getInt("type") == rationName) {
-//						if (jsonMap.has(typeName))
-//							jsonMap.put(typeName,
-//									(jsonMap.getInt(typeName) + 1));
-//						else
-//							jsonMap.put(typeName, 1);
-//						isfound = true;
-//						break;
-//					}
-//				}
-//				if (!isfound) {
-//					jsonMap = new JSONObject();
-//					jsonMap.put("type", rationName);
-//					jsonMap.put(typeName, 1);
-//					jsonArray.put(jsonMap);
-//				}
-//			}
-//			if(null == jsonArray){
-//			jsonArray = new JSONArray();
-//			jsonArray.put(jsonMap);
-//			}
-//			perfsMulti = jsonArray.toString();
-//			editor.putString(AdViewManager.PREFS_STRING_MULTI, perfsMulti);
-//			editor.commit();
-//		} catch (JSONException e) {
-//			logError("JSONException", e);
-//		}
-//
-//	}
+
+	// public static void openWebBrowser(final String url, final Context
+	// context) {
+	//
+	// if (url.toLowerCase().endsWith(".apk")) {
+	// Intent i = new Intent(context, DownloadService.class);
+	// i.putExtra("adview_url", url);
+	// context.startService(i);
+	// } else {
+	// Intent intent = new Intent(context, AdviewWebView.class);
+	// Bundle bundle = new Bundle();
+	// bundle.putString("adviewurl", url);
+	// intent.putExtras(bundle);
+	// context.startActivity(intent);
+	// }
+	//
+	// }
+
+	public static void storeInfo(Context context, String keyAdView,
+			int rationType, String typeName) {
+		String perfsMulti = null;
+		boolean isfound = false;
+		JSONArray jsonArray = null;
+		JSONObject jsonMap = null;
+		SharedPreferences adViewPrefs = context.getSharedPreferences(keyAdView,
+				Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = adViewPrefs.edit();
+		try {
+			perfsMulti = adViewPrefs.getString(PREFS_STRING_MULTI, null);
+			if (perfsMulti == null) {
+				jsonMap = new JSONObject();
+				jsonMap.put("type", rationType);
+				jsonMap.put(typeName, 1);
+			} else {
+				jsonArray = new JSONArray(perfsMulti);
+				for (int i = 0; i < jsonArray.length(); i++) {
+					jsonMap = jsonArray.getJSONObject(i);
+					if (jsonMap.getInt("type") == rationType) {
+						if (jsonMap.has(typeName))
+							jsonMap.put(typeName,
+									(jsonMap.getInt(typeName) + 1));
+						else
+							jsonMap.put(typeName, 1);
+						isfound = true;
+						break;
+					}
+				}
+				if (!isfound) {
+					jsonMap = new JSONObject();
+					jsonMap.put("type", rationType);
+					jsonMap.put(typeName, 1);
+					jsonArray.put(jsonMap);
+				}
+			}
+			if (null == jsonArray) {
+				jsonArray = new JSONArray();
+				jsonArray.put(jsonMap);
+			}
+			perfsMulti = jsonArray.toString();
+			editor.putString(PREFS_STRING_MULTI, perfsMulti);
+			editor.commit();
+		} catch (JSONException e) {
+			logError("JSONException", e);
+		}
+
+	}
+
+	// public static byte[] fileConnect(InputStream is) {
+	// try {
+	// ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	// int ch = 0;
+	// while ((ch = is.read()) != -1) {
+	// baos.write(ch);
+	// }
+	// byte[] datas = baos.toByteArray();
+	// baos.close();
+	// baos = null;
+	// is.close();
+	// is = null;
+	// return datas;
+	// } catch (Exception e) {
+	// return null;
+	// }
+	// }
+
+	public static InputStream getInputStream(Context context, String url) {
+		URL myFileUrl = null;
+		InputStream is = null;
+		try {
+			myFileUrl = new URL(url);
+			long modifysince = 0;
+			SharedPreferences imagemodifysince = context.getSharedPreferences(
+					"imagemodifysince", Context.MODE_PRIVATE);
+
+			int pos = url.lastIndexOf("/");
+			String filename = url.substring(pos + 1);
+			File updateDir = null;
+			File updateFile = null;
+			updateDir = new File(Environment.getExternalStorageDirectory(),
+					"Adview/ad/");
+			updateFile = new File(updateDir.getPath(), filename);
+
+			if ("mounted".equals(Environment.getExternalStorageState())) {
+				if (updateDir.exists()) {
+					if (updateFile.exists()) {
+						modifysince = imagemodifysince.getLong(filename, 0);
+					}
+				} else {
+					updateDir.mkdirs();
+				}
+			}
+
+			HttpURLConnection conn = (HttpURLConnection) myFileUrl
+					.openConnection();
+			if (modifysince > 0)
+				conn.setIfModifiedSince(modifysince);
+			conn.setDoInput(true);
+			conn.setConnectTimeout(REQUESTTIMEOUT);
+			conn.setReadTimeout(REQUESTTIMEOUT);
+
+			conn.connect();
+
+			int respCode;
+			respCode = conn.getResponseCode();
+
+			long lastModify;
+			lastModify = conn.getLastModified();
+
+			if (respCode == 304) {
+				is = new FileInputStream(updateFile);
+			} else if (respCode == 200) {
+				is = conn.getInputStream();
+
+				if (updateDir.exists()) {
+					SharedPreferences.Editor editor = imagemodifysince.edit();
+					editor.putLong(filename, lastModify);
+					editor.commit();
+
+					FileOutputStream fileOutputStream = null;
+					fileOutputStream = new FileOutputStream(updateFile);
+
+					byte[] buf = new byte[1024 * 8];
+					int ch = -1;
+
+					int count = 0;
+					while ((ch = is.read(buf)) != -1) {
+						fileOutputStream.write(buf, 0, ch);
+						count += ch;
+					}
+					fileOutputStream.flush();
+					fileOutputStream.close();
+
+					is = new FileInputStream(updateFile);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return is;
+	}
+
 }

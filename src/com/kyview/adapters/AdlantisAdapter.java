@@ -42,6 +42,7 @@ public class AdlantisAdapter extends AdViewAdapter implements AdRequestListener{
 		if(adViewLayout == null) {
 	 		return;
 	 	}
+		adViewLayout.removeAllViews();
 		adView = new AdlantisView(adViewLayout.getContext());
 		AdlantisUtils.adHeightForOrientation(Gravity.BOTTOM);
 		adView.setPublisherID(ration.key);
@@ -52,15 +53,16 @@ public class AdlantisAdapter extends AdViewAdapter implements AdRequestListener{
 
 	@Override
 	public void onFailedToReceiveAd(AdRequestNotifier arg0) {
-		 
 		 AdViewUtil.logInfo("Adlantis  fauire");
 		adView.removeRequestListener(this);
-		AdViewLayout adviewlayout=adViewLayoutReference.get();
-		if(adviewlayout==null){
+		AdViewLayout adViewLayout=adViewLayoutReference.get();
+		if(adViewLayout==null){
 			return ;
 		}
-		adviewlayout.adViewManager.getRollover_pri();
-		adviewlayout.rotatePriAd();
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);
+//		adViewLayout.adViewManager.getRollover_pri();
+//		adViewLayout.rotatePriAd();
 	}
 
 	@Override
@@ -71,7 +73,7 @@ public class AdlantisAdapter extends AdViewAdapter implements AdRequestListener{
 		  if(adViewLayout == null) {
 			  return;
 		  }
-
+		super.onSuccessed(adViewLayout, ration);
 		  adViewLayout.adViewManager.resetRollover();
 //		  adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0));
 		  adViewLayout.rotateThreadedDelayed();

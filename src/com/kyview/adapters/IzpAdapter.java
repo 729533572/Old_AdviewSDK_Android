@@ -67,26 +67,26 @@ public class IzpAdapter extends AdViewAdapter implements IZPDelegate{
 		
 	}
 
-	//@Override
+	@Override
 	public boolean shouldRequestFreshAd(IZPView view) {
 		AdViewUtil.logInfo("shouldRequestFreshAd");
 		return true;
 	}
 
-	//@Override
+	@Override
 	public void didReceiveFreshAd(IZPView view, int adCount)
 	{
 		AdViewUtil.logInfo("didReceiveFreshAd, adCount="+adCount);
 	}
 
-	//@Override
+	@Override
 	public boolean shouldShowFreshAd(IZPView view)
 	{
 		AdViewUtil.logInfo("shouldShowFreshAd");
 		return true;
 	}
 
-	//@Override
+	@Override
 	public void didShowFreshAd(IZPView view)
 	{
 		AdViewUtil.logInfo("didShowFreshAd");
@@ -97,17 +97,18 @@ public class IzpAdapter extends AdViewAdapter implements IZPDelegate{
 		  if(adViewLayout == null) {
 			  return;
 		  }
+		  super.onSuccessed(adViewLayout, ration);
 		adViewLayout.adViewManager.resetRollover();  
 		adViewLayout.rotateThreadedDelayed();
 	}	
 
-	//@Override
+	@Override
 	public void willLeaveApplication(IZPView view)
 	{
 		AdViewUtil.logInfo("willLeaveApplication");
 	}
 
-	//@Override
+	@Override
 	public void errorReport(IZPView view, int errorCode,String errorInfo)
 	{
 		AdViewUtil.logInfo("errorReport");
@@ -118,10 +119,11 @@ public class IzpAdapter extends AdViewAdapter implements IZPDelegate{
 		  if(adViewLayout == null) {
 			 return;
 		  }
-		 adViewLayout.rotateThreadedPri(1);
+		  super.onFailed(adViewLayout, ration);
+		 //adViewLayout.rotateThreadedPri(1);
 	}	
 
-	//@Override
+	@Override
 	public void didStopFullScreenAd(IZPView view)
 	{
 		AdViewUtil.logInfo("didStopFullScreenAd");

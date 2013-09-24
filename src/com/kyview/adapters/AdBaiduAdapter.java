@@ -4,7 +4,6 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import com.baidu.mobads.AdService;
@@ -70,6 +69,7 @@ public class AdBaiduAdapter extends AdViewAdapter implements AdViewListener {
 		if (activity == null) {
 			return;
 		}
+
 		adViewLayout.removeAllViews();
 		adViewLayout.activeRation = adViewLayout.nextRation;
 		// if((ration.key3).compareTo("1")==0)
@@ -78,7 +78,7 @@ public class AdBaiduAdapter extends AdViewAdapter implements AdViewListener {
 		// else
 		new AdService(activity, adViewLayout,
 				new ViewGroup.LayoutParams(-1, -2), this);
-	}
+		}
 
 	@Override
 	public void onAdClick(JSONObject arg0) {
@@ -100,19 +100,20 @@ public class AdBaiduAdapter extends AdViewAdapter implements AdViewListener {
 		if (adViewLayout == null) {
 			return;
 		}
-		adViewLayout.rotateThreadedPri(1);
+		super.onFailed(adViewLayout, ration);
+//		adViewLayout.rotateThreadedPri(1);
 	}
 
 	@Override
-	public void onAdReady(AdView arg0) {
+	public void onAdReady(AdView arg0) {	
 		AdViewUtil.logInfo("onAdReady");
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if(adViewLayout == null) {
 		return;
 		}
+		super.onSuccessed(adViewLayout, ration);
 		if(!isFailed){
 		adViewLayout.adViewManager.resetRollover();
-		Log.i("count", arg0.getChildCount()+"");
 		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0));
 		adViewLayout.rotateThreadedDelayed();
 		isFailed=false;
@@ -122,11 +123,11 @@ public class AdBaiduAdapter extends AdViewAdapter implements AdViewListener {
 	@Override
 	public void onAdShow(JSONObject arg0) {
 		AdViewUtil.logInfo("onAdShow");
-		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if (adViewLayout == null) {
-			return;
-		}
-		adViewLayout.reportBaiduImpression();
+//		AdViewLayout adViewLayout = adViewLayoutReference.get();
+//		if (adViewLayout == null) {
+//			return;
+//		}
+//		adViewLayout.reportBaiduImpression();
 	}
 
 	@Override
@@ -171,7 +172,6 @@ public class AdBaiduAdapter extends AdViewAdapter implements AdViewListener {
 	@Override
 	public void onVideoStart() {
 		// TODO Auto-generated method stub
-
 	}
 	@Override
 	public void clean() {

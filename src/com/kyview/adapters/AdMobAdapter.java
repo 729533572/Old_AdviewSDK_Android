@@ -99,14 +99,14 @@ public class AdMobAdapter extends AdViewAdapter implements AdListener {
 
 	@Override
 	public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
-		// TODO Auto-generated method stub
 		AdViewUtil.logInfo("AdMob fail");
 		arg0.setAdListener(null);
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if (adViewLayout == null) {
 			return;
 		}
-		adViewLayout.rotateThreadedPri(1);
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);
 	}
 
 	@Override
@@ -138,6 +138,7 @@ public class AdMobAdapter extends AdViewAdapter implements AdListener {
 		if (!(arg0 instanceof AdView)) {
 			return;
 		}
+		super.onSuccessed(adViewLayout, ration);
 		adView = (AdView) arg0;
 		adViewLayout.adViewManager.resetRollover();
 		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView));
@@ -149,8 +150,12 @@ public class AdMobAdapter extends AdViewAdapter implements AdListener {
 	public void clean() {
 		// TODO Auto-generated method stub
 		super.clean();
-		if(adView!=null)
-		adView.destroy();
+		
+		if(adView!=null) {
+			adView.setAdListener(null);
+			adView.destroy();
+		}
+		
 		adView=null;
 		AdViewUtil.logInfo("release AdMob");
 	}

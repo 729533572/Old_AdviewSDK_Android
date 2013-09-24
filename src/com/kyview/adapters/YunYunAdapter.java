@@ -1,7 +1,6 @@
 package com.kyview.adapters;
 
 import android.app.Activity;
-import android.util.Log;
 
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
@@ -52,6 +51,7 @@ public class YunYunAdapter extends AdViewAdapter implements AdListener {
 			request.setTesting(false);
 		}
 		request.setRefreshTime(0);
+		request.addExtra("channel", AdViewUtil.ADVIEW4YUNYUN);
 		adView = new AdView(activity, AdSize.BANNER, ration.key);
 		adView.loadAd(request);
 		// 设置监听器
@@ -79,21 +79,22 @@ public class YunYunAdapter extends AdViewAdapter implements AdListener {
 			if (adViewLayout == null) {
 				return;
 			}
-
-			adViewLayout.rotateThreadedPri(1);
+			super.onFailed(adViewLayout, ration);
+			//adViewLayout.rotateThreadedPri(1);
 		}
 	}
 
 	@Override
 	public void onLeaveApplication(Ad arg0) {
-		// TODO Auto-generated method stub
-		Log.i("onLeaveApplication", "onLeaveApplication");
+		if(arg0!=null)
+		adView.destroy();
+		adView=null;
+		AdViewUtil.logInfo("onLeaveApplication");
 	}
 
 	@Override
 	public void onPresentScreen(Ad arg0) {
-		// TODO Auto-generated method stub
-
+		AdViewUtil.logInfo("onPresentScreen");
 	}
 
 	@Override
@@ -103,8 +104,8 @@ public class YunYunAdapter extends AdViewAdapter implements AdListener {
 		if (adViewLayout == null) {
 			return;
 		}
+		super.onSuccessed(adViewLayout, ration);
 		arg0.setAdListener(null);
-
 		adViewLayout.adViewManager.resetRollover();
 		adViewLayout.rotateThreadedDelayed();
 		adViewLayout.reportImpression();
@@ -113,9 +114,6 @@ public class YunYunAdapter extends AdViewAdapter implements AdListener {
 	public void clean() {
 		// TODO Auto-generated method stub
 		super.clean();
-		if(adView!=null)
-		adView.destroy();
-		adView=null;
-		AdViewUtil.logInfo("release YunYun");
+
 	}
 }

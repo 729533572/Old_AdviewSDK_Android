@@ -58,7 +58,7 @@ public class SmartAdAdapter extends AdViewAdapter implements SMAdBannerListener 
 			SMAdManager.setDebuMode(false);
 		smAdBannerView = new SMAdBannerView(activity, ration.key2,
 				SMAdBannerView.AUTO_AD_MEASURE);
-		AdViewUtil.writeLogtoFile("adview_adrequest_log", "adRequest");
+		// AdViewUtil.writeLogtoFile("adview_adrequest_log", "adRequest");
 		smAdBannerView.setSMAdBannerListener(this);
 	}
 
@@ -76,10 +76,10 @@ public class SmartAdAdapter extends AdViewAdapter implements SMAdBannerListener 
 	public void onClickedAd() {
 		AdViewUtil.logInfo("smartmad onClickedAd");
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if (adViewLayout == null) 
+		if (adViewLayout == null)
 			return;
 		adViewLayout.reportClick();
-		AdViewUtil.writeLogtoFile("adview_adclick_log", "adClick");
+		// AdViewUtil.writeLogtoFile("adview_adclick_log", "adClick");
 	}
 
 	@Override
@@ -106,29 +106,35 @@ public class SmartAdAdapter extends AdViewAdapter implements SMAdBannerListener 
 	public void onReceivedAd(SMAdBannerView arg0) {
 		AdViewUtil.logInfo("onReceivedAd");
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if (adViewLayout == null) 		
+		if (adViewLayout == null)
 			return;
+		super.onSuccessed(adViewLayout, ration);
+		// AdViewUtil.writeLogtoFile("adview_adreceived_log", "adonReceived");
 		adViewLayout.adViewManager.resetRollover();
 		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0));
 		adViewLayout.rotateThreadedDelayed();
-		AdViewUtil.writeLogtoFile("adview_adreceived_log", "adonReceived");
 	}
 
 	@Override
 	public void onAttachedToScreen(SMAdBannerView arg0, SMRequestEventCode arg1) {
 		AdViewUtil.logInfo("onAttachedToScreen");
-		AdViewUtil.writeLogtoFile("adview_adattached_log", "adonAttached");
+		// AdViewUtil.writeLogtoFile("adview_adattached_log", "adonAttached");
+
 	}
 
 	@Override
 	public void onFailedToReceiveAd(SMAdBannerView arg0, SMRequestEventCode arg1) {
-		AdViewUtil.logInfo("onFailedToReceiveAd smartmad failure, SMRequestEventCode=" + arg1);
+		AdViewUtil
+				.logInfo("onFailedToReceiveAd smartmad failure, SMRequestEventCode="
+						+ arg1);
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if (adViewLayout == null) {
 			return;
 		}
-		adViewLayout.rotateThreadedPri(1);
-		AdViewUtil.writeLogtoFile("adview_adfailed_log", "adonFailedToReceive");
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);
+		// AdViewUtil.writeLogtoFile("adview_adfailed_log",
+		// "adonFailedToReceive");
 	}
 
 }

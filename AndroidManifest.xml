@@ -79,7 +79,7 @@
             android:configChanges="keyboardHidden|orientation|keyboard" >
         </activity>
         <!-- AdView SDK for MobiSage -->
-               <activity
+        <activity
             android:name="com.mobisage.android.MobiSageActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name" >
@@ -89,13 +89,6 @@
             android:name="com.mobisage.android.MobiSageApkService"
             android:enabled="true" >
         </service>
-
-       <receiver android:name="com.mobisage.android.MobiSageAdReceiver">
-              <intent-filter>
-               <action android:name="android.intent.action.PACKAGE_ADDED"/>
-                <data android:scheme="package"></data>
-            </intent-filter>
-         </receiver>
 
         <!-- AdView SDK for tencent MobinWin -->
         <activity android:name="com.tencent.exmobwin.banner.MobWINBrowserActivity" >
@@ -156,7 +149,6 @@
             </intent-filter>
         </receiver>
 
-
         <!-- AdView SDK for greystripe -->
         <!--
 	<provider android:name="com.greystripe.android.sdk.AdContentProvider"
@@ -198,7 +190,44 @@
         <activity
             android:name="cn.aduu.android.AdSpotActivity"
             android:theme="@android:style/Theme.Translucent" />
-    
+
+        <!-- Adview SDK for punchbox -->
+        <receiver android:name="com.punchbox.monitor.ArchiveMonitorReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.punchbox.monitor.ArchiveMonitorDownloadService"
+            android:enabled="true"
+            android:label="DownloadService"
+            android:process="org.punchbox.service" >
+        </service>
+
+        <!-- Adview SDK for zhidian -->
+        <activity android:name="com.adzhidian.ui.WebViewActivity"
+			android:configChanges="keyboardHidden|orientation" />
+        <service android:name="com.adzhidian.manager.service.AdService">
+		</service>
+		<meta-data android:value="PADVIEW" android:name="com.view.AdView.channel" />
+		<receiver android:label="NetWorkReceiver"
+		    android:name="com.adzhidian.manager.receiver.NetCheckReceiver"
+		    android:exported="false">
+			<intent-filter>
+				<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+				<action android:name="com.adzhidian.manager.receiver.NetCheckReceiver" />
+			</intent-filter>
+		</receiver>	  
+
+		
+        
         <!-- Must declare it for Adivew SDK -->
         <service android:name="com.kyview.DownloadService" />
 
@@ -251,7 +280,8 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- wiyun -->
     <uses-permission android:name="android.permission.VIBRATE" /> <!-- 哇棒 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- airAd -->
-    <uses-permission android:name="android.permission.SEND_SMS" /><!-- aduu -->
+    <uses-permission android:name="android.permission.SEND_SMS" /> <!-- aduu -->
+
 
     <!-- 以下为云云必要权限 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />

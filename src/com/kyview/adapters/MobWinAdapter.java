@@ -15,25 +15,25 @@ import com.tencent.exmobwin.banner.TAdView;
 //import com.kyview.AdViewLayout.ViewAdRunnable;
 //import com.kyview.obj.Extra;
 
-
-public class MobWinAdapter extends AdViewAdapter implements AdListener{
+public class MobWinAdapter extends AdViewAdapter implements AdListener {
 	private TAdView adView;
-	
+
 	private static int networkType() {
 		return AdViewUtil.NETWORK_TYPE_MOBWIN;
 	}
-	
+
 	public static void load(AdViewAdRegistry registry) {
 		try {
-			if(Class.forName("com.tencent.exmobwin.banner.TAdView") != null) {
+			if (Class.forName("com.tencent.exmobwin.banner.TAdView") != null) {
 				registry.registerClass(networkType(), MobWinAdapter.class);
 			}
-		} catch (ClassNotFoundException e) {}
+		} catch (ClassNotFoundException e) {
+		}
 	}
 
 	public MobWinAdapter() {
 	}
-	
+
 	@Override
 	public void initAdapter(AdViewLayout adViewLayout, Ration ration) {
 		// TODO Auto-generated constructor stub
@@ -42,75 +42,76 @@ public class MobWinAdapter extends AdViewAdapter implements AdListener{
 	@Override
 	public void handle() {
 		// TODO Auto-generated method stub
-		
+
 		AdViewUtil.logInfo("Into MobWin");
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if(adViewLayout == null) {
+		if (adViewLayout == null) {
 			return;
-	 	}
-	 	//Extra extra = adViewLayout.extra;
-	    //int bgColor = Color.rgb(extra.bgRed, extra.bgGreen, extra.bgBlue);
-	      
-	    Activity activity = adViewLayout.activityReference.get();
-		  if(activity == null) {
-			  return;
-		  }  	     
-	   Context mcontext=(Context)activity;
-	   MobWINManager.init(mcontext,  ration.key, "adview", "ben1574leo",Type.MOBWIN_BANNER);
-	   adView = new TAdView(activity); 
-	   adView.setAdListener(this);	
-	   //adView.setBackgroundColor(bgColor);
+		}
+		// Extra extra = adViewLayout.extra;
+		// int bgColor = Color.rgb(extra.bgRed, extra.bgGreen, extra.bgBlue);
 
-	   adViewLayout.AddSubView(adView);
+		Activity activity = adViewLayout.activityReference.get();
+		if (activity == null) {
+			return;
+		}
+		Context mcontext = (Context) activity;
+		MobWINManager.init(mcontext, ration.key, "adview", "ben1574leo",
+				Type.MOBWIN_BANNER);
+		adView = new TAdView(activity);
+		adView.setAdListener(this);
+		// adView.setBackgroundColor(bgColor);
+
+		adViewLayout.AddSubView(adView);
 	}
 
 	@Override
 	public void onReceiveFailed(int errorId) {
 		// TODO Auto-generated method stub
-		
-		AdViewUtil.logInfo("onReceiveFailed, errorId="+errorId);
-		  adView.setAdListener(null);
 
-		  AdViewLayout adViewLayout = adViewLayoutReference.get();
-		  if(adViewLayout == null) {
-			 return;
-		  }
-		  adViewLayout.rotateThreadedPri(1);
-		
+		AdViewUtil.logInfo("onReceiveFailed, errorId=" + errorId);
+		adView.setAdListener(null);
+
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if (adViewLayout == null) {
+			return;
+		}
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);
+
 	}
 
 	@Override
 	public void onReceiveAd() {
 		// TODO Auto-generated method stub
-	
+
 		AdViewUtil.logInfo("onReceiveAd");
 		adView.setAdListener(null);
-		
-		  AdViewLayout adViewLayout = adViewLayoutReference.get();
-		  if(adViewLayout == null) {
-			  return;
-		  }
 
-		adViewLayout.reportImpression();	
-		  adViewLayout.adViewManager.resetRollover();
-		  //adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView));
-		  adViewLayout.rotateThreadedDelayed();
-		
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if (adViewLayout == null) {
+			return;
+		}
+		super.onSuccessed(adViewLayout, ration);
+		adViewLayout.reportImpression();
+		adViewLayout.adViewManager.resetRollover();
+		// adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView));
+		adViewLayout.rotateThreadedDelayed();
+
 	}
 
-	//@Override
+	// @Override
 	public void onAdClick() {
 		AdViewUtil.logInfo("onAdClick");
 	}
-
 
 	@Override
 	public void clean() {
 		// TODO Auto-generated method stub
 		super.clean();
-		if(adView!=null)
-		MobWINManager.destroy();
+		if (adView != null)
+			MobWINManager.destroy();
 		AdViewUtil.logInfo("release MobWin");
-		}
+	}
 
 }

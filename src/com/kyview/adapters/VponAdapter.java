@@ -75,12 +75,7 @@ public class VponAdapter extends AdViewAdapter implements AdListener{
 				adView.setLicenseKey(ration.key, AdOnPlatform.CN, autoRefreshAd);
 			else
 				adView.setLicenseKey(ration.key, AdOnPlatform.TW, autoRefreshAd);	
-			adView.setAdListener(this);
-			
-			
-			//adViewLayout.addView(adView, new LayoutParams(
-			//		LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			//adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView)); 
+			adView.setAdListener(this);	
 			adViewLayout.AddSubView(adView);
 			
 		} catch (IllegalArgumentException e) {
@@ -99,8 +94,8 @@ public class VponAdapter extends AdViewAdapter implements AdListener{
 		if (adViewLayout == null) {
 			return;
 		}
-
-		  adViewLayout.rotateThreadedPri(1);
+		super.onFailed(adViewLayout, ration);
+		  //adViewLayout.rotateThreadedPri(1);
 		
 	}
 
@@ -115,7 +110,7 @@ public class VponAdapter extends AdViewAdapter implements AdListener{
 		if (adViewLayout == null) {
 			return;
 		}
-
+		super.onSuccessed(adViewLayout, ration);
 		adViewLayout.reportImpression();	
 		adViewLayout.adViewManager.resetRollover();
 		//adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0));

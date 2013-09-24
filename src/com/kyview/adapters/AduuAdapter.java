@@ -48,7 +48,7 @@ public class AduuAdapter extends AdViewAdapter implements AdListener{
 		if (activity == null) {
 			return;
 		}
-		//if(AdViewTargeting.getRunMode()==RunMode.TEST)
+		
 		AdManager.init(activity, ration.key, ration.key2, 90,0, 0,61);//-9, 0, 2, 61
 		adView = new AdView(activity, null);
 		adView.setBannerSize(AdViewSize.SIZE_320X50);
@@ -67,6 +67,7 @@ public class AduuAdapter extends AdViewAdapter implements AdListener{
 		if(adViewLayout == null) {
 			return;
 		}
+		super.onSuccessed(adViewLayout, ration);
 		adViewLayout.reportImpression();
 		adViewLayout.adViewManager.resetRollover();
 		adViewLayout.rotateThreadedDelayed();
@@ -81,7 +82,8 @@ public class AduuAdapter extends AdViewAdapter implements AdListener{
 		if(adViewLayout == null) {
 			return;
 		}
-		adViewLayout.rotateThreadedPri(1);
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);
 	}	
 	
 	public void onAdSwitch() {

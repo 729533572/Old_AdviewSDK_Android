@@ -48,6 +48,7 @@ public class DoubleClickAdapter extends AdViewAdapter implements AdListener{
 		 if(activity==null){
 			 return ;
 		 }
+		 adViewLayout.removeAllViews();
 		 DfpAdView adview=new DfpAdView(activity,AdSize.BANNER,ration.key);
 		 adViewLayout.addView(adview);
 		 adview.setAdListener(this);
@@ -73,6 +74,7 @@ public class DoubleClickAdapter extends AdViewAdapter implements AdListener{
 		if (adViewLayout == null) {
 			return;
 		}
+		super.onFailed(adViewLayout, ration);
 		adViewLayout.rotateThreadedPri(1);
 		
 	}
@@ -85,11 +87,6 @@ public class DoubleClickAdapter extends AdViewAdapter implements AdListener{
 	@Override
 	public void onPresentScreen(Ad arg0) {
 		AdViewUtil.logInfo("AdMob onPresentScreen");
-		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if(adViewLayout == null) {
-			return;
-		}
-		
 	}
 
 	@Override
@@ -103,6 +100,7 @@ public class DoubleClickAdapter extends AdViewAdapter implements AdListener{
 		if (!(arg0 instanceof AdView)) {
 			return;
 		}
+		super.onSuccessed(adViewLayout, ration);
 		AdView adView = (AdView)arg0;
 		adViewLayout.adViewManager.resetRollover();
 		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView));

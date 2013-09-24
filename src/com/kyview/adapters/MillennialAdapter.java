@@ -1,122 +1,106 @@
-
-
 package com.kyview.adapters;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
 import android.app.Activity;
-import android.content.Context;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.widget.RelativeLayout;
 
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
-import com.kyview.AdViewTargeting;
-import com.kyview.AdViewTargeting.Gender;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
 import com.millennialmedia.android.MMAd;
 import com.millennialmedia.android.MMAdView;
 import com.millennialmedia.android.MMException;
-import com.millennialmedia.android.MMRequest;
 import com.millennialmedia.android.MMSDK;
 import com.millennialmedia.android.RequestListener;
 
 public class MillennialAdapter extends AdViewAdapter implements RequestListener {
+	private static final int IAB_LEADERBOARD_WIDTH = 728;
+	private static final int IAB_LEADERBOARD_HEIGHT = 90;
+	private static final int MED_BANNER_WIDTH = 480;
+	private static final int MED_BANNER_HEIGHT = 60;
+	private static final int BANNER_AD_WIDTH = 320;
+	private static final int BANNER_AD_HEIGHT = 50;
+
+	private int placementWidth = BANNER_AD_WIDTH;
+	private int placementHeight = BANNER_AD_HEIGHT;
+
+	private int layoutWidth = 0;
+	private int layoutHeight = 0;
+
 	private static int networkType() {
 		return AdViewUtil.NETWORK_TYPE_MILLENNIAL;
 	}
-	
+
 	public static void load(AdViewAdRegistry registry) {
 		try {
-			if(Class.forName("com.millennialmedia.android.MMAdView") != null) {
+			if (Class.forName("com.millennialmedia.android.MMAdView") != null) {
 				registry.registerClass(networkType(), MillennialAdapter.class);
 			}
-		} catch (ClassNotFoundException e) {}
+		} catch (ClassNotFoundException e) {
+		}
 	}
 
 	public MillennialAdapter() {
 	}
-	
+
 	@Override
 	public void initAdapter(AdViewLayout adViewLayout, Ration ration) {
-		// TODO Auto-generated constructor stub
-		
+		if (canFit(IAB_LEADERBOARD_WIDTH)) {
+			placementWidth = IAB_LEADERBOARD_WIDTH;
+			placementHeight = IAB_LEADERBOARD_HEIGHT;
+		} else if (canFit(MED_BANNER_WIDTH)) {
+			placementWidth = MED_BANNER_WIDTH;
+			placementHeight = MED_BANNER_HEIGHT;
+		}
+		layoutWidth = (int) TypedValue.applyDimension(
+				TypedValue.COMPLEX_UNIT_DIP, placementWidth,
+				adViewLayout.activityReference.get().getResources()
+						.getDisplayMetrics());
+		layoutHeight = (int) TypedValue.applyDimension(
+				TypedValue.COMPLEX_UNIT_DIP, placementHeight,
+				adViewLayout.activityReference.get().getResources()
+						.getDisplayMetrics());
 	}
 
 	@Override
 	public void handle() {
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if(adViewLayout == null) {
+		if (adViewLayout == null) {
 			return;
-	 	}
+		}
 		Activity activity = adViewLayout.activityReference.get();
-		
-	 	Hashtable<String, String> map = new Hashtable<String, String>();	
-	 	
-	 	map.putAll(getAdSize(activity));
-	 	final AdViewTargeting.Gender gender = AdViewTargeting.getGender();
-	    if (gender == Gender.MALE) {
-	      map.put("gender", "male");
-	    } else if (gender == Gender.FEMALE) {
-	      map.put("gender", "female");
-	    }
-	    final int age = AdViewTargeting.getAge();
-	    if (age != -1) {
-	      map.put("age", String.valueOf(age));
-	    }
-	    final String postalCode = AdViewTargeting.getPostalCode();
-	    if (!TextUtils.isEmpty(postalCode)) {
-	      map.put("zip", postalCode);
-	    }
-	    final String keywords = AdViewTargeting.getKeywordSet() != null ? TextUtils
-	            .join(",", AdViewTargeting.getKeywordSet())
-	            : AdViewTargeting.getKeywords();
-	        if (!TextUtils.isEmpty(keywords)) {
-	          map.put("keywords", keywords);
-	    }
-	    map.put("vendor", "adwhirl");
-	    
-        // Instantiate an ad view and add it to the view
-	    MMAdView adView = new MMAdView(activity);
-	    adView.setApid(ration.key);
-	    adView.setId(MMSDK.getDefaultAdId());
-		MMRequest request = new MMRequest();
-		request.setMetaValues(map);
-		adView.setMMRequest(request);
-	    adView.setListener(this);
-	    adView.getAd();
-	    adViewLayout.AddSubView(adView);
 
-	    adView.setHorizontalScrollBarEnabled(false);
-	    adView.setVerticalScrollBarEnabled(false);
+		MMAdView adView = new MMAdView(activity);
+		adView.setApid(ration.key);
+		adView.setId(MMSDK.getDefaultAdId());
 
+		adView.setWidth(placementWidth);
+		adView.setHeight(placementHeight);
+
+		adView.setListener(this);
+		adView.getAd();
+
+		adViewLayout.activeRation = adViewLayout.nextRation;
+		adViewLayout.removeAllViews();
+		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+				layoutWidth, layoutHeight);
+		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+		adViewLayout.addView(adView, layoutParams);
+		adViewLayout.addCloseButton(adViewLayout);
 
 	}
-	static boolean isTablet(Context context)
-	{
-		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-		return (metrics.heightPixels >= 728 && metrics.widthPixels >= 728);
-	}
-	static Map<String, String> getAdSize(Context context)
-	{
-		Map<String, String> metaData = new HashMap<String, String>();
-		if(isTablet(context))
-		{
-			metaData.put("width", "728");
-			metaData.put("height", "90");
-		}
-		else
-		{
-			metaData.put("width", "480");
-			metaData.put("height", "60");
-		}
-		return metaData;
-	}
 
-	
+	protected boolean canFit(int adWidth) {
+		int adWidthPx = (int) TypedValue.applyDimension(
+				TypedValue.COMPLEX_UNIT_DIP, adWidth,
+				adViewLayoutReference.get().activityReference.get()
+						.getResources().getDisplayMetrics());
+		DisplayMetrics metrics = adViewLayoutReference.get().activityReference
+				.get().getResources().getDisplayMetrics();
+		return metrics.widthPixels >= adWidthPx;
+	}
 
 	@Override
 	public void MMAdOverlayLaunched(MMAd arg0) {
@@ -134,12 +118,13 @@ public class MillennialAdapter extends AdViewAdapter implements RequestListener 
 		AdViewUtil.logInfo("Millennial success");
 		arg0.setListener(null);
 
-	 	AdViewLayout adViewLayout = adViewLayoutReference.get();
-	 	if(adViewLayout == null) {
-	 		return;
-	 	}
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if (adViewLayout == null) {
+			return;
+		}
+		super.onSuccessed(adViewLayout, ration);
 		adViewLayout.reportImpression();
- 		adViewLayout.adViewManager.resetRollover();
+		adViewLayout.adViewManager.resetRollover();
 		adViewLayout.rotateThreadedDelayed();
 
 	}
@@ -149,10 +134,20 @@ public class MillennialAdapter extends AdViewAdapter implements RequestListener 
 		AdViewUtil.logInfo("Millennial failure");
 		arg0.setListener(null);
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
-	 	if(adViewLayout == null) 
-	 		return;
-		adViewLayout.rotateThreadedPri(1);
-		
+		if (adViewLayout == null)
+			return;
+		super.onFailed(adViewLayout, ration);
+		// adViewLayout.rotateThreadedPri(1);
+
 	}
-	
+
+	@Override
+	public void MMAdOverlayClosed(MMAd arg0) {
+
+	}
+
+	@Override
+	public void onSingleTap(MMAd arg0) {
+	}
+
 }

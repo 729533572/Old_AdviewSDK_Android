@@ -34,8 +34,7 @@ public class DomobAdapter extends AdViewAdapter implements DomobAdEventListener 
 
 	@Override
 	public void initAdapter(AdViewLayout adViewLayout, Ration ration) {
-		// TODO Auto-generated constructor stub
-	}
+		}
 
 	@Override
 	public void handle() {
@@ -88,7 +87,8 @@ public class DomobAdapter extends AdViewAdapter implements DomobAdEventListener 
 		if (adViewLayout == null) {
 			return;
 		}
-		adViewLayout.rotateThreadedPri(1);
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);
 
 	}
 
@@ -103,6 +103,7 @@ public class DomobAdapter extends AdViewAdapter implements DomobAdEventListener 
 		if (adViewLayout == null) {
 			return;
 		}
+		super.onSuccessed(adViewLayout, ration);
 		adViewLayout.reportImpression();
 		adViewLayout.adViewManager.resetRollover();
 //		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView));

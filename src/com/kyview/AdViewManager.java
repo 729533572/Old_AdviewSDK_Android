@@ -37,13 +37,14 @@ import android.view.WindowManager;
 import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.AdViewTargeting.UpdateMode;
 import com.kyview.adapters.AdViewAdapter;
+import com.kyview.base64.Crypts;
 import com.kyview.obj.Extra;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
 
 public class AdViewManager {
 	public String keyAdView;
-	public String configVer="";
+
 	private Extra extra;
 	private List<Ration> rationsList;
 	// private List<Ration> rationsList_pri;
@@ -51,15 +52,14 @@ public class AdViewManager {
 	private WeakReference<Context> contextReference;
 
 	// Default config expire timeout is 20 minutes.
-	public static int configExpireTimeout = 1200;
+	public static int configExpireTimeout = 2 * 600;
 
 	Iterator<Ration> rollovers;
 	Iterator<Ration> rollover_pri;
 
 	public int mSimulator = 0;
-	
-	public final static String PREFS_STRING_MULTI = "multi";
-	private final static String PREFS_STRING_TIMESTAMP = "timestamp";
+
+
 	private final static String PREFS_STRING_CONFIG = "config";
 	private boolean youmiInit = true;
 	private boolean bGotNetConfig = false;
@@ -119,6 +119,12 @@ public class AdViewManager {
 		return configExpireTimeout;
 	}
 
+	private Ration afRation(){
+		Ration ration=new Ration();
+		ration.type=997;
+		return ration;
+	}
+	
 	public synchronized Ration getRation() {
 		Random random = new Random();
 
@@ -170,6 +176,24 @@ public class AdViewManager {
 	}
 
 	public synchronized void resetRollover() {
+		if (AdViewLayout.isadFill) {
+			int total = AdViewUtil.common_count + AdViewUtil.adfill_count;
+			for (int i = 0; i < rationsList.size(); i++) {
+				if (this.rationsList.get(i).type==997)
+					this.rationsList.remove(i);
+			}
+			if (total != 0) {
+				if ((double) (AdViewUtil.adfill_count / total) > AdViewUtil.adfill_precent) {
+					if (this.rationsList.isEmpty())
+						this.rationsList.add(0,afRation());
+					else
+						this.rationsList.add(this.rationsList.size() - 1,
+								afRation());
+				} else
+					this.rationsList.add(0, afRation());
+			} else
+				this.rationsList.add(0, afRation());
+		}
 		this.rollovers = this.rationsList.iterator();
 	}
 
@@ -202,20 +226,21 @@ public class AdViewManager {
 						- mLastConfigTime >= configExpireTimeout * 1000));
 	}
 
-	public void fetchConfig() {
-		String jsonString = actFetchConfig(AdViewTargeting.getUpdateMode()==UpdateMode.EVERYTIME);
+	public void fetchConfig(AdViewLayout adViewLayout) {
+		String jsonString = actFetchConfig(AdViewTargeting.getUpdateMode() == UpdateMode.EVERYTIME);
 
-		if (jsonString == null) {
+		if ((jsonString == null || jsonString.length() == 0)
+				&& (AdViewTargeting.getUpdateMode() != UpdateMode.EVERYTIME)) {
 			jsonString = actFetchConfig(true);
 
-			if (jsonString == null) {
+			if (jsonString == null || jsonString.length() == 0) {
 				jsonString = getLocalConfig(this.keyAdView);
-				parseOfflineConfigurationString(jsonString);
+				parseOfflineConfigurationString(adViewLayout, jsonString);
 				return;
 			}
 		}
 
-		parseConfigurationString(jsonString);
+		parseConfigurationString(adViewLayout, jsonString);
 	}
 
 	public static String performGetContent(String url) {
@@ -255,29 +280,32 @@ public class AdViewManager {
 		String jsonString = "";
 		if (!bForceFromServer) {
 			jsonString = adViewPrefs.getString(PREFS_STRING_CONFIG, null);
-			mLastConfigTime = adViewPrefs.getLong(PREFS_STRING_TIMESTAMP, 0);
+			mLastConfigTime = adViewPrefs.getLong(AdViewUtil.PREFS_STRING_TIMESTAMP, 0);
 			return jsonString;
 		}
 
 		String url = String.format(AdViewUtil.urlConfig, this.keyAdView,
-				AdViewUtil.VERSION, mSimulator, mLocation,
-				AdViewUtil.currentSecond(),AdViewUtil.VERSION);
-		//AdViewUtil.logInfo(url);
+				AdViewLayout.appVersion, mSimulator, mLocation,
+				AdViewUtil.currentSecond(), AdViewUtil.VERSION);
+		// AdViewUtil.logInfo(url);
 		jsonString = performGetContent(url);
 
-		if (null!=jsonString&&jsonString.length() > 0
-				&& checkConfigurationString(jsonString) == true) {
-			mLastConfigTime = System.currentTimeMillis();
-			// parseConfigurationString(jsonString);
-			// if(this.rationsList.size() > 0)
-			{
-				SharedPreferences.Editor editor = adViewPrefs.edit();
-				editor.putString(PREFS_STRING_CONFIG, jsonString);
-				editor.putLong(PREFS_STRING_TIMESTAMP,
-						System.currentTimeMillis());
-				editor.commit();
+		if (null != jsonString && jsonString.length() > 0) {
+			if (checkConfigurationString(jsonString) == true) {
+				mLastConfigTime = System.currentTimeMillis();
+				// parseConfigurationString(jsonString);
+				// if(this.rationsList.size() > 0)
+				{
+					SharedPreferences.Editor editor = adViewPrefs.edit();
+					editor.putString(PREFS_STRING_CONFIG, jsonString);
+					editor.putLong(AdViewUtil.PREFS_STRING_TIMESTAMP,
+							System.currentTimeMillis());
+					editor.commit();
+				}
+				bGotNetConfig = true;
+			} else {
+				jsonString = "";
 			}
-			bGotNetConfig = true;
 		} else {
 			jsonString = "";
 		}
@@ -285,7 +313,7 @@ public class AdViewManager {
 		return jsonString;
 	}
 
-	public void fetchConfigFromServer() {
+	public void fetchConfigFromServer(AdViewLayout adViewLayout) {
 		if (bGotNetConfig
 				&& System.currentTimeMillis() - mLastConfigTime < CONFIG_SERVER_LIMIT_MSTIME) {
 			// if last server fetch time is limited in some minutes (like 5),
@@ -295,7 +323,7 @@ public class AdViewManager {
 
 		String jsonString = actFetchConfig(true);
 		if (null != jsonString && jsonString.length() > 0)
-			parseConfigurationString(jsonString);
+			parseConfigurationString(adViewLayout, jsonString);
 	}
 
 	private static String convertStreamToString(InputStream is) {
@@ -339,25 +367,45 @@ public class AdViewManager {
 		return ret;
 	}
 
-	private void parseConfiguration(String jsonString) {
+	private void parseConfiguration(AdViewLayout adViewLayout, String jsonString) {
 		AdViewUtil.logInfo(jsonString);
+		String afp = null;
 		try {
 			JSONObject json = new JSONObject(jsonString);
-			configVer=Integer.toString(json.optInt("version", 0));
+			AdViewUtil.configVer = json.optInt("version", 0);
+			if (json.has("adFill"))
+				if(json.getString("adFill").equals("0"))
+					AdViewLayout.isadFill = false;
+				else
+					AdViewLayout.isadFill = true;
+			else
+				AdViewLayout.isadFill = false;
 			parseExtraJson(json.getJSONObject("extra"));
 			parseRationsJson(json.getJSONArray("rations"));
+
+			if (json.has("afp")) {
+				afp = json.getString("afp");
+				afp = Crypts.xorMapDecrypt(afp);
+				AdViewUtil.adfill_precent = (Double.parseDouble(afp) / 100.0D);
+			}
 		} catch (JSONException e) {
 			this.extra = new Extra();
 		} catch (NullPointerException e) {
 			this.extra = new Extra();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
-	private void parseConfigurationString(String jsonString) {
-		parseConfiguration(jsonString);
+	private void parseConfigurationString(AdViewLayout adViewLayout,
+			String jsonString) {
+		parseConfiguration(adViewLayout, jsonString);
 	}
 
-	private void parseOfflineConfigurationString(String jsonString) {
+	private void parseOfflineConfigurationString(AdViewLayout adViewLayout,
+			String jsonString) {
+		String afp = null;
 		try {
 			JSONObject json = new JSONObject(jsonString);
 
@@ -366,10 +414,28 @@ public class AdViewManager {
 			} else {
 				json = json.getJSONObject("foreign_cfg");
 			}
+			if (json.has("adFill"))
+				if(json.getString("adFill").equals("0"))
+					AdViewLayout.isadFill = false;
+				else
+					AdViewLayout.isadFill = true;
+			else
+				AdViewLayout.isadFill = false;
+
+			AdViewUtil.configVer = json.optInt("version", 0);
 			parseExtraJson(json.getJSONObject("extra"));
 			parseRationsJson(json.getJSONArray("rations"));
+
+			if (json.has("afp")) {
+				afp = json.getString("afp");
+				afp = Crypts.xorMapDecrypt(afp);
+				AdViewUtil.adfill_precent = (Double.parseDouble(afp) / 100.0D);
+			}
 		} catch (JSONException e) {
-			parseConfiguration(jsonString);
+			parseConfiguration(adViewLayout, jsonString);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -381,9 +447,9 @@ public class AdViewManager {
 			extra.locationOn = json.getInt("loacation_on");
 			extra.transition = json.getInt("transition");
 			extra.report = json.getString("report");
-			
+
 			AdViewUtil.initConfigUrls(extra.report);
-			
+
 			JSONObject backgroundColor = json
 					.getJSONObject("background_color_rgb");
 			extra.bgRed = backgroundColor.getInt("red");
@@ -408,11 +474,20 @@ public class AdViewManager {
 		return this.rationsList;
 	}
 
-//	public void setTestRationsList(Ration ration) {
-//
-//		this.rationsList.clear();
-//		this.rationsList.add(ration);
-//	}
+	public synchronized Ration getadFillRation() {
+		Ration ration = null;
+		for (int i = 0; i < this.rationsList.size(); i++) {
+			if (rationsList.get(i).type == 28) {
+				ration = rationsList.get(i);
+				break;
+			}
+		}
+		return ration;
+	}
+
+	public synchronized Ration getAdFill() {
+		return afRation();
+	}
 
 	private synchronized void parseRationsJson(JSONArray json) {
 		List<Ration> rationsList = new ArrayList<Ration>();
@@ -461,6 +536,7 @@ public class AdViewManager {
 		} catch (JSONException e) {
 
 		}
+		// rationsList.add(getAdFill());
 		// if set the location optimizing
 		/*
 		 * if(this.extra.locationOn == 0){ //if the location is in China
@@ -473,12 +549,21 @@ public class AdViewManager {
 		 */
 		{
 			rationsList.addAll(rationsList_ex);
+
 			totalweight += totalweight_ex;
 			// rationsList_pri.addAll(rationsList_pri_ex);
 		}
 
 		Collections.sort(rationsList);
 		this.rationsList = rationsList;
+		// only for test
+//		AdViewLayout.isadFill = true;
+		if (AdViewLayout.isadFill)
+			if (this.rationsList.isEmpty()) {
+				this.rationsList.add(0, afRation());
+				totalweight = 100.0;
+			} else
+				this.rationsList.add(rationsList.size() - 1, afRation());
 		this.rollovers = this.rationsList.iterator();
 		this.totalWeight = totalweight;
 		/*
@@ -503,7 +588,7 @@ public class AdViewManager {
 			AdViewUtil.logInfo("There is no imei, or run in emulator");
 			return false;
 		} else {
-			// Log.d(AdViewUtil.ADVIEW, "run in device, imei="+imei);
+			AdViewUtil.logInfo("run in device, imei=" + imei);
 		}
 
 		String countryCodeDefault = Locale.getDefault().getCountry()
@@ -562,7 +647,7 @@ public class AdViewManager {
 			} else
 				AdViewUtil.logInfo("location == null");
 		} catch (Exception e) {
-			Log.i(AdViewUtil.ADVIEW, e.toString());
+			AdViewUtil.logError("", e);
 		}
 
 		return false;
@@ -638,5 +723,4 @@ public class AdViewManager {
 		}
 		return tmDevice.toString();
 	}
-
 }

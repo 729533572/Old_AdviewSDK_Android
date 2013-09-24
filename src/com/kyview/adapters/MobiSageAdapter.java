@@ -25,7 +25,7 @@ public class MobiSageAdapter extends AdViewAdapter implements
 
 	public static void load(AdViewAdRegistry registry) {
 		try {
-			if (Class.forName("com.mobisage.android.MobiSageAdBanner") != null) {
+			if (Class.forName("com.mobisage.android.IMobiSageAdViewListener") != null) {
 				registry.registerClass(networkType(), MobiSageAdapter.class);
 			}
 		} catch (ClassNotFoundException e) {
@@ -60,11 +60,12 @@ public class MobiSageAdapter extends AdViewAdapter implements
 		adv.setAnimeType(MobiSageAnimeType.Anime_LeftToRight);
 		adv.setMobiSageAdViewListener(this);
 		adViewLayout.activeRation = adViewLayout.nextRation;
-		// adViewLayout.removeAllViews();
+		adViewLayout.removeAllViews();
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 		adViewLayout.addView(adv, layoutParams);
+		adViewLayout.addCloseButton(adViewLayout);
 	}
 
 	public void onMobiSageAdViewShow(Object adView) {
@@ -73,11 +74,11 @@ public class MobiSageAdapter extends AdViewAdapter implements
 		if (adViewLayout == null) {
 			return;
 		}
-
+		super.onSuccessed(adViewLayout, ration);
 		adv.setMobiSageAdViewListener(null);
 		adViewLayout.adViewManager.resetRollover();
 		adViewLayout.rotateThreadedDelayed();
-		adViewLayout.reportImpression(); 
+		adViewLayout.reportImpression();
 	}
 
 	public void onMobiSageAdViewUpdate(Object adView) {
@@ -96,18 +97,23 @@ public class MobiSageAdapter extends AdViewAdapter implements
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if (adViewLayout == null)
 			return;
-		adViewLayout.rotateThreadedPri(1);
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);
 	}
 
 	@Override
 	public void onMobiSageAdViewClick(Object arg0) {
-
+		AdViewUtil.logInfo("onMobiSageAdViewClick");
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if (adViewLayout == null) {
+			return;
+		}
+		adViewLayout.reportClick();
 	}
 
 	@Override
 	public void onMobiSageAdViewClose(Object arg0) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override

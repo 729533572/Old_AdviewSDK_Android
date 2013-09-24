@@ -81,6 +81,7 @@ public class AirAdAdapter extends AdViewAdapter implements AirADListener {
 		if(adViewLayout == null) {
 			return;
 		}
+		super.onSuccessed(adViewLayout, ration);
 		adViewLayout.reportImpression();
 		adViewLayout.adViewManager.resetRollover();
 		//adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, airAD));
@@ -100,7 +101,8 @@ public class AirAdAdapter extends AdViewAdapter implements AirADListener {
 		if(adViewLayout == null) {
 			return;
 		}
-		adViewLayout.rotateThreadedPri(1);
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);
 		
 	}
 

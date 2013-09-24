@@ -11,23 +11,24 @@ import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
 
-public class AdChinaAdapter extends AdViewAdapter implements AdBannerListener{
+public class AdChinaAdapter extends AdViewAdapter implements AdBannerListener {
 
 	private static int networkType() {
 		return AdViewUtil.NETWORK_TYPE_ADCHINA;
 	}
-	
+
 	public static void load(AdViewAdRegistry registry) {
 		try {
-			if(Class.forName("com.adchina.android.ads.views.AdView") != null) {
+			if (Class.forName("com.adchina.android.ads.views.AdView") != null) {
 				registry.registerClass(networkType(), AdChinaAdapter.class);
 			}
-		} catch (ClassNotFoundException e) {}
+		} catch (ClassNotFoundException e) {
+		}
 	}
 
 	public AdChinaAdapter() {
 	}
-	
+
 	@Override
 	public void initAdapter(AdViewLayout adViewLayout, Ration ration) {
 		// TODO Auto-generated constructor stub
@@ -38,37 +39,39 @@ public class AdChinaAdapter extends AdViewAdapter implements AdBannerListener{
 		// TODO Auto-generated method stub
 		AdViewUtil.logInfo("Into AdChina");
 
-	 	AdViewLayout adViewLayout = adViewLayoutReference.get();
-	 	if(adViewLayout == null) {
-	 		return;
-	 	}
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if (adViewLayout == null) {
+			return;
+		}
 
 		AdManager.setRefershinterval(-1);
-		AdManager.setRelateScreenRotate(adViewLayout.getContext(),true);	
-		AdView mAdView=new AdView(adViewLayout.getContext(), ration.key, true, false);
+		AdManager.setRelateScreenRotate(adViewLayout.getContext(), true);
+		AdView mAdView = new AdView(adViewLayout.getContext(), ration.key,
+				true, false);
 		mAdView.setAdBannerListener(this);
-		
-		mAdView.setVisibility(View.VISIBLE);	
+
+		mAdView.setVisibility(View.VISIBLE);
 		mAdView.start();
+
 	}
-	
+
 	public void onFailedToReceiveAd(AdView arg0) {
 		AdViewUtil.logInfo("onFailedToReceiveAd");
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if(adViewLayout == null) {
+		if (adViewLayout == null) {
 			return;
 		}
-		adViewLayout.rotateThreadedPri(1); 
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);
 	}
 
 	public void onReceiveAd(AdView adView) {
-		
 		AdViewUtil.logInfo("onReceiveAd");
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if(adViewLayout == null) {
-		return;
+		if (adViewLayout == null) {
+			return;
 		}
-
+		super.onSuccessed(adViewLayout, ration);
 		adViewLayout.adViewManager.resetRollover();
 		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView));
 		adViewLayout.rotateThreadedDelayed();
@@ -83,22 +86,19 @@ public class AdChinaAdapter extends AdViewAdapter implements AdBannerListener{
 	@Override
 	public void onClickBanner(AdView arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onFailedToRefreshAd(AdView arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onRefreshAd(AdView arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
-
-
-	
 
 }

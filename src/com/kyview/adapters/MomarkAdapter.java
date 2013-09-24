@@ -70,7 +70,8 @@ public class MomarkAdapter extends AdViewAdapter implements AdViewListener{
 		  if(adViewLayout == null) {
 			 return;
 		  }
-		  adViewLayout.rotateThreadedPri(1);
+		  super.onFailed(adViewLayout, ration);
+		  //adViewLayout.rotateThreadedPri(1);
 		
 	}
 
@@ -85,7 +86,7 @@ public class MomarkAdapter extends AdViewAdapter implements AdViewListener{
 		  if(adViewLayout == null) {
 			  return;
 		  }
-
+		  super.onSuccessed(adViewLayout, ration);
 		  adViewLayout.adViewManager.resetRollover();
 		  adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, paramAdView));
 		  adViewLayout.rotateThreadedDelayed();

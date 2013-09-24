@@ -81,7 +81,8 @@ public class UmengAdapter extends AdViewAdapter implements UmengAdListener{
 		if(adViewLayout == null) {
 			return;
 		}
-		adViewLayout.rotateThreadedPri(1);
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);
 	}
 
 	@Override
@@ -93,7 +94,7 @@ public class UmengAdapter extends AdViewAdapter implements UmengAdListener{
 		if(adViewLayout == null) {
 			return;
 		}
-
+		super.onSuccessed(adViewLayout, ration);
 		adViewLayout.adViewManager.resetRollover();
 		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, paramAdView));
 		adViewLayout.rotateThreadedDelayed();

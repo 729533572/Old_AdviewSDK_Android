@@ -8,6 +8,7 @@ import java.util.Set;
 public class AdViewTargeting {
 	private static RunMode runMode;
 	private static UpdateMode updateMode;
+	private static SwitcherMode switcherMode;
 	private static AdArea adArea;
 	private static Gender gender;
 	private static GregorianCalendar birthDate;
@@ -15,9 +16,9 @@ public class AdViewTargeting {
 	private static String keywords;
 	private static Set<String> keywordSet;
 	private static Channel channel;
+
 	private static int adWidth;
 	private static int adHeight;
-	
 
 	static {
 		resetData();
@@ -26,17 +27,14 @@ public class AdViewTargeting {
 	private static void resetData() {
 		AdViewTargeting.runMode = RunMode.NORMAL;
 		AdViewTargeting.updateMode=UpdateMode.DEFAULT;
+		AdViewTargeting.switcherMode=SwitcherMode.DEFAULT;
 		AdViewTargeting.adArea=AdArea.BOTTOM;
 		AdViewTargeting.gender = Gender.UNKNOWN;
 		AdViewTargeting.birthDate = null;
 		AdViewTargeting.postalCode = null;
 		AdViewTargeting.keywords = null;
 		AdViewTargeting.keywordSet = null;
-		AdViewTargeting.channel=Channel.OTHER;
-		AdViewTargeting.adWidth = 0;
-		AdViewTargeting.adHeight = 0;	
-		
-		
+		AdViewTargeting.channel=Channel.OTHER;	
 	}
 	
 	public static enum Channel{
@@ -54,6 +52,9 @@ public class AdViewTargeting {
 	}
 	public static enum RunMode{
 		NORMAL,TEST
+	}
+	public static enum SwitcherMode{
+		DEFAULT,CANCLOSED
 	}
 	/**
 	 * 获取当前渠道模式,渠道包括ADVIEW,EOE,GOOGLEMARKET,APPCHINA,HIAPK,GFAN,GOAPK,NDUOA,OTHER.
@@ -112,6 +113,26 @@ public class AdViewTargeting {
 		if(updateMode==null)
 			updateMode=UpdateMode.DEFAULT;
 		AdViewTargeting.updateMode=updateMode;
+	}
+	
+	/**
+	 * 获取配置更新模式:1.每次都更新(SwitcherMode.CANCLOSED) 2.系统默认时间段更新(SwitcherMode.DEFAULT).
+	 * 用法举例:SwitcherMode switcherMode=AdViewTargeting.getSwitcherMode();
+	 * 
+	 */
+	public static SwitcherMode getSwitcherMode() {
+		return switcherMode;
+	}
+	
+	/**
+	 * 设置配置更新模式:1.每次都更新(UpdateMode.CANCLOSED) 2.系统默认时间段更新(StatusMode.DEFAULT).
+	 * 用法举例:AdViewTargeting.setStatusMode(StatusMode.DEFAULT);
+	 * 
+	 */
+	public static void setSwitcherMode(SwitcherMode statusMode) {
+		if(statusMode==null)
+			statusMode=SwitcherMode.DEFAULT;
+		AdViewTargeting.switcherMode = statusMode;
 	}
 	/**
 	 * 获取部分公司的广告在手机的显示位置:1.上部(AdArea.TOP) 2.底部(AdArea.BOTTOM).
@@ -272,17 +293,17 @@ public class AdViewTargeting {
 		}
 		keywordSet.add(keyword);
 	 }
-
+	 
 	 public static void setAdWidthHeight(int width, int height) {
-		    AdViewTargeting.adWidth = width;
-		    AdViewTargeting.adHeight = height;	
+		    adWidth = width;
+		    adHeight = height;	
 	}
 
 	public static int getAdWidth() {
-		return AdViewTargeting.adWidth;
+		return adWidth;
 	}
 
 	public static int getAdHeight() {
-		return AdViewTargeting.adHeight;
+		return adHeight;
 	}	
 }

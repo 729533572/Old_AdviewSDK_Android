@@ -1,42 +1,44 @@
--injars 'D:\work\AdViewSDK_Android2.jar'
+-injars 'C:\Users\zhangchen\Desktop\AdViewSDK_Android.jar'
 -outjars 'D:\work\AdViewSDK_Android.jar'
 
--libraryjars 'D:\android_dev\android-sdk-windows\tools\proguard\lib\retrace.jar'
--libraryjars 'D:\android_dev\android-sdk-windows\platforms\android-4\android.jar'
--libraryjars libs\ad-fractalist-sdk-android.jar
--libraryjars libs\adchina_android_sdk.jar
--libraryjars libs\adlantis.jar
--libraryjars libs\adlib_android.jar
--libraryjars libs\adOn-3.2.8.jar
--libraryjars libs\adtouch-embed-sdk-1.1.0.jar
--libraryjars libs\Adwo_Android_SDK3.1.jar
--libraryjars libs\airAD_sdk.jar
--libraryjars libs\amazon-ads-3.17.5.jar
--libraryjars libs\AppMediaAdAndroidSdk-1.1.0.jar
--libraryjars libs\Baidu_MobAds_SDK_Agg_3.2.jar
--libraryjars libs\domob_android_sdk.jar
--libraryjars libs\GoogleAdMobAdsSdk-6.2.1.jar
--libraryjars libs\greystripe-android-sdk-2.0.2.jar
--libraryjars libs\immobSDK.jar
--libraryjars libs\InMobiAdNetwork_3.6.2.jar
--libraryjars libs\InMobiCommons_3.6.2.jar
--libraryjars libs\IZPView.jar
--libraryjars libs\l_android_adsdk.jar
--libraryjars libs\mdotm-sdk-android.jar
--libraryjars libs\MMAdView.jar
--libraryjars libs\mobisageSDK.jar
--libraryjars libs\momark_sdk_v1.4.1.jar
--libraryjars libs\smartmad-sdk-android.jar
--libraryjars libs\SOMAAndroidSDK2.5.4.jar
--libraryjars libs\Tencent_MobWIN_SDK_2.0.jar
--libraryjars libs\tinmoo-android-sdkv3.1.0.jar
--libraryjars libs\umeng_ad_android_sdk_v1.4.4.jar
--libraryjars libs\WiAd.jar
--libraryjars libs\WiCommon.jar
--libraryjars libs\wqmobile_android_sdk.jar
--libraryjars libs\youmi-android.jar
--libraryjars libs\yunyun-ads-sdk-4-Adview-V3.0.jar
--libraryjars libs\zestadz_sdk_androidv1.2.jar
+-libraryjars 'D:\zc\android-sdk-windows\tools\proguard\lib\retrace.jar'
+-libraryjars 'D:\zc\android-sdk-windows\platforms\android-4\android.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\Adwo_Android_SDK4.0.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\AppMediaAdAndroidSdk-1.1.0.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\Baidu_MobAds_SDK_Agg_3.2.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\GoogleAdMobAdsSdk-6.4.1.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\IZPView.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\InMobiAdNetwork.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\InMobiCommons.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\MMSDK.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\PunchBoxSDK_Android.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\SOMAAndroidSDK2.5.4.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\SmartMad-SDK-Android.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\Tencent_MobWIN_SDK_2.1.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\WiAd.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\WiCommon.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\ad-fractalist-sdk-android.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\adOn-3.2.8.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\adchina_android_sdk.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\adlantis.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\adlib_android.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\adtouch-embed-sdk-1.1.0.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\aduu-sdk.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\airAD_sdk.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\domob_android_sdk.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\greystripe-android-sdk-2.0.2.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\immobSDK.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\l_android_adsdk.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\mdotm-sdk-android.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\mobisageSDK.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\momark_sdk_v1.4.1.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\tinmoo-android-sdkv3.1.0.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\umeng_ad_android_sdk_v1.4.4.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\wqmobile_android_sdk.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\youmi-android.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\yunyun-ads-sdk-4-Adview.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\zestadz_sdk_androidv1.2.jar'
+-libraryjars 'D:\adview_project\trunk\adview-sdk-ad-android\libs\zhidian_ad_sdk.jar'
 
 -overloadaggressively
 -useuniqueclassmembernames
@@ -61,6 +63,13 @@
     public <methods>;
 }
 
+-keep class com.kyview.adapters.* {
+    <fields>;
+    <methods>;
+}
+
+-keep class com.kyview.adapters.*$*
+
 #    public protected <fields>;
 -keep public interface  com.kyview.AdViewInterface {
     public <methods>;
@@ -74,9 +83,8 @@
     public <methods>;
 }
 
--keep class com.kyview.adapters.** {
-    <fields>;
-    <methods>;
+-keep public class com.kyview.adapters.AdViewAdapter {
+    public <methods>;
 }
 
 -keep public class com.kyview.AdviewWebView {

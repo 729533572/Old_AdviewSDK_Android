@@ -18,11 +18,7 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.webkit.WebView;
@@ -33,15 +29,12 @@ import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
 import com.kyview.AdViewTargeting;
 import com.kyview.AdViewTargeting.RunMode;
-import com.kyview.AdviewWebView;
-import com.kyview.DownloadService;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
 import com.kyview.util.MD5;
 import com.kyview.util.SHA1;
 
-class SuizongAD
-{
+class SuizongAD {
 	public String adid = "";
 	public String status = "";
 	public String msg = "";
@@ -60,18 +53,17 @@ class SuizongAD
 	public String sid = "";
 }
 
-class SuizongScreenManager
-{
+class SuizongScreenManager {
 	private String aw = "320";
 	private String ah = "48";
 	private int screenWidth = -1;
 
 	public String getAw() {
-	       return this.aw;
+		return this.aw;
 	}
-	 
+
 	public void setAw(String aw) {
-		 this.aw = aw;
+		this.aw = aw;
 	}
 
 	public String getAh() {
@@ -101,7 +93,7 @@ class SuizongScreenManager
 	}
 }
 
-public class SuizongInterfaceAdapter extends AdViewAdapter{
+public class SuizongInterfaceAdapter extends AdViewAdapter {
 
 	public SuizongAD suizongAD;
 	private double density;
@@ -109,33 +101,32 @@ public class SuizongInterfaceAdapter extends AdViewAdapter{
 	private double adHeight;
 	private double adWidth;
 	private static String url = "";
-	private String serial_key = "67590f398bf0447931eb20fa2b63bb36";//"67590f398bf0447931eb20fa2b63bb36"//"67590f398bf0447931eb20fa2b63bb34"
+	private String serial_key = "67590f398bf0447931eb20fa2b63bb36";// "67590f398bf0447931eb20fa2b63bb36"//"67590f398bf0447931eb20fa2b63bb34"
 	private AdViewLayout adViewLayout;
 	private SuizongScreenManager suizongScreenManager;
 	static final String SuizongApiAddr = "http://api.suizong.com/mobile/";
-	public String mDeviceid="";
+	public String mDeviceid = "";
 	public Context mContext;
-	
-	public static int convertToScreenPixels(int dipPixels, double density)
-	{
-		double pix=0;
-		
-	 	pix = density > 0.0D ? dipPixels * density : dipPixels;
 
-		return (int)pix;
+	public static int convertToScreenPixels(int dipPixels, double density) {
+		double pix = 0;
+
+		pix = density > 0.0D ? dipPixels * density : dipPixels;
+
+		return (int) pix;
 	}
 
 	private static int networkType() {
 		return AdViewUtil.NETWORK_TYPE_SUIZONG;
 	}
-	
+
 	public static void load(AdViewAdRegistry registry) {
 		registry.registerClass(networkType(), SuizongInterfaceAdapter.class);
 	}
 
 	public SuizongInterfaceAdapter() {
 	}
-	
+
 	@Override
 	public void initAdapter(AdViewLayout adViewLayout, Ration ration) {
 		// TODO Auto-generated constructor stub
@@ -145,29 +136,27 @@ public class SuizongInterfaceAdapter extends AdViewAdapter{
 	public void handle() {
 		AdViewUtil.logInfo("Into SuizongInterfaceAdapter");
 		adViewLayout = adViewLayoutReference.get();
-		if(adViewLayout == null) {
+		if (adViewLayout == null) {
 			return;
-	 	}
-		mContext = (Context)adViewLayout.activityReference.get();
+		}
+		mContext = (Context) adViewLayout.activityReference.get();
 
 		suizongAD = new SuizongAD();
 		density = adViewLayout.mDensity;
 		calcAdSize(adViewLayout.adViewManager.width);
 		mDeviceid = adViewLayout.adViewManager.mDeviceid;
-		adViewLayout.scheduler.schedule(
-			new FetchSuizongADRunnable(this, this.ration), 0L, TimeUnit.SECONDS);
+		AdViewLayout.scheduler.schedule(new FetchSuizongADRunnable(this,
+				this.ration), 0L, TimeUnit.SECONDS);
 	}
 
 	private void calcAdSize(int screenWidth) {
-		int width=320;
-		int height=48;
+		int width = 320;
+		int height = 48;
 
-		if (AdViewTargeting.getAdWidth() > 0)
-		{
+		if (AdViewTargeting.getAdWidth() > 0) {
 			width = AdViewTargeting.getAdWidth();
-			height = AdViewTargeting.getAdHeight();			
-		}
-		else if (screenWidth <= 480) {
+			height = AdViewTargeting.getAdHeight();
+		} else if (screenWidth <= 480) {
 			width = 320;
 			height = 48;
 		} else if (screenWidth < 728) {
@@ -181,38 +170,38 @@ public class SuizongInterfaceAdapter extends AdViewAdapter{
 		adHeight = convertToScreenPixels(height, density);
 		adWidth = convertToScreenPixels(width, density);
 	}
-	
+
 	@Override
-	public void click()
-	{
-	     url = SuizongApiAddr + "ADServerClickAPI";
-	 
-	     new Thread() {
-	       public void run() {
-			AdViewUtil.logInfo("click");
-			HashMap<String, String> map2 = new HashMap<String, String>();
-			map2.put("adid", suizongAD.adid);
-			map2.put("updatetime", suizongAD.updateTime);
-			map2.put("sid", suizongAD.sid);
-			map2.put("appkey", ration.key);
-			map2.put("uuid", mDeviceid);
-			map2.put("client", "2");
-			map2.put("ip", ip);			
-			String pcheckGetBody = makePcheck4Show(map2);
-			map2.put("pcheck", pcheckGetBody);
-			map2.put("icheck", MD5.MD5Encode(pcheckGetBody + serial_key));
-			httpRequest(map2, "click");
-	       }
-	     }
-	     .start();
+	public void click(int isMissTouch) {
+		url = SuizongApiAddr + "ADServerClickAPI";
+
+		new Thread() {
+			public void run() {
+				AdViewUtil.logInfo("click");
+				HashMap<String, String> map2 = new HashMap<String, String>();
+				map2.put("adid", suizongAD.adid);
+				map2.put("updatetime", suizongAD.updateTime);
+				map2.put("sid", suizongAD.sid);
+				map2.put("appkey", ration.key);
+				map2.put("uuid", mDeviceid);
+				map2.put("client", "2");
+				map2.put("ip", ip);
+				String pcheckGetBody = makePcheck4Show(map2);
+				map2.put("pcheck", pcheckGetBody);
+				map2.put("icheck", MD5.MD5Encode(pcheckGetBody + serial_key));
+				httpRequest(map2, "click");
+			}
+		}.start();
 	}
 
-	public static HttpURLConnection createConnection(HashMap<String, String> header, String content, String method, boolean doInput, boolean dooutput, boolean usecaches, boolean followRedirects, int connectTimeout, int readTimeout)
-		throws MalformedURLException, IOException
-	{
+	public static HttpURLConnection createConnection(
+			HashMap<String, String> header, String content, String method,
+			boolean doInput, boolean dooutput, boolean usecaches,
+			boolean followRedirects, int connectTimeout, int readTimeout)
+			throws MalformedURLException, IOException {
 		HttpURLConnection httpurlconnection = null;
-		
-		httpurlconnection = (HttpURLConnection)new URL(url).openConnection();
+
+		httpurlconnection = (HttpURLConnection) new URL(url).openConnection();
 		httpurlconnection.setDoInput(doInput);
 		httpurlconnection.setDoOutput(dooutput);
 		httpurlconnection.setRequestMethod(method);
@@ -223,8 +212,8 @@ public class SuizongInterfaceAdapter extends AdViewAdapter{
 		if ((header != null) && (!header.isEmpty())) {
 			Iterator<String> it_key = header.keySet().iterator();
 			while (it_key.hasNext()) {
-				String key = (String)it_key.next();
-				String value = (String)header.get(key);
+				String key = (String) it_key.next();
+				String value = (String) header.get(key);
 				httpurlconnection.addRequestProperty(key, value);
 			}
 		}
@@ -243,37 +232,47 @@ public class SuizongInterfaceAdapter extends AdViewAdapter{
 		BufferedReader bufferReader = null;
 		BufferedWriter bufferWriter = null;
 
-		if(AdViewTargeting.getRunMode()==RunMode.TEST)
-			;//Log.d(AdViewUtil.ADVIEW, "httpRequest, content="+content);	
+		if (AdViewTargeting.getRunMode() == RunMode.TEST)
+			;// Log.d(AdViewUtil.ADVIEW, "httpRequest, content="+content);
 
-		try { 
-			httpurlconnection = createConnection(header, content, "POST", true, 
-				true, false, false, 30000, 30000);
+		try {
+			httpurlconnection = createConnection(header, content, "POST", true,
+					true, false, false, 30000, 30000);
 
 			int responseCode = httpurlconnection.getResponseCode();
 
-			if(AdViewTargeting.getRunMode()==RunMode.TEST)
-				;//Log.d(AdViewUtil.ADVIEW, "httpRequest, responseCode="+responseCode);	
+			if (AdViewTargeting.getRunMode() == RunMode.TEST)
+				;// Log.d(AdViewUtil.ADVIEW,
+					// "httpRequest, responseCode="+responseCode);
 
 			if (200 == responseCode) {
-				if (content.equals("request"))
-				{
-					this.suizongAD.status = httpurlconnection.getHeaderField("status");
-					
-					if (suizongAD.status.equals("1"))
-					{
-						suizongAD.adid = httpurlconnection.getHeaderField("adid");
-						suizongAD.updateTime = httpurlconnection.getHeaderField("updatetime");
-						suizongAD.awidth = httpurlconnection.getHeaderField("width");
-						suizongAD.aheight = httpurlconnection.getHeaderField("height");
-						suizongAD.awidth = httpurlconnection.getHeaderField("width");
-						suizongAD.refreshTime = httpurlconnection.getHeaderField("refresh");
-						suizongAD.impURL = httpurlconnection.getHeaderField("imps_url");
-						suizongAD.clickURL = httpurlconnection.getHeaderField("click_url");
-						suizongAD.priceType = httpurlconnection.getHeaderField("price_type");
-						suizongAD.price = httpurlconnection.getHeaderField("price");
+				if (content.equals("request")) {
+					this.suizongAD.status = httpurlconnection
+							.getHeaderField("status");
+
+					if (suizongAD.status.equals("1")) {
+						suizongAD.adid = httpurlconnection
+								.getHeaderField("adid");
+						suizongAD.updateTime = httpurlconnection
+								.getHeaderField("updatetime");
+						suizongAD.awidth = httpurlconnection
+								.getHeaderField("width");
+						suizongAD.aheight = httpurlconnection
+								.getHeaderField("height");
+						suizongAD.awidth = httpurlconnection
+								.getHeaderField("width");
+						suizongAD.refreshTime = httpurlconnection
+								.getHeaderField("refresh");
+						suizongAD.impURL = httpurlconnection
+								.getHeaderField("imps_url");
+						suizongAD.clickURL = httpurlconnection
+								.getHeaderField("click_url");
+						suizongAD.priceType = httpurlconnection
+								.getHeaderField("price_type");
+						suizongAD.price = httpurlconnection
+								.getHeaderField("price");
 						suizongAD.sid = httpurlconnection.getHeaderField("sid");
-						
+
 						return;
 					}
 
@@ -284,46 +283,43 @@ public class SuizongInterfaceAdapter extends AdViewAdapter{
 
 				if (content.equals("getbody")) {
 					String contentStr = "";
-					//Log.d(AdViewUtil.ADVIEW, "getbody result:" + httpurlconnection.getHeaderField("result"));
-					if(AdViewTargeting.getRunMode()==RunMode.TEST)
-					{
-						//suizongAD.msg = httpurlconnection.getHeaderField("msg");
-						//Log.d(AdViewUtil.ADVIEW, "erro msg2:" + this.suizongAD.msg);
+					// Log.d(AdViewUtil.ADVIEW, "getbody result:" +
+					// httpurlconnection.getHeaderField("result"));
+					if (AdViewTargeting.getRunMode() == RunMode.TEST) {
+						// suizongAD.msg =
+						// httpurlconnection.getHeaderField("msg");
+						// Log.d(AdViewUtil.ADVIEW, "erro msg2:" +
+						// this.suizongAD.msg);
 					}
-					
+
 					contentStream = httpurlconnection.getInputStream();
-					bufferReader = new BufferedReader(
-					new InputStreamReader(contentStream), 4096);
+					bufferReader = new BufferedReader(new InputStreamReader(
+							contentStream), 4096);
 					while ((contentStr = bufferReader.readLine()) != null)
 						this.suizongAD.data += contentStr.replace("%20", " ");
 					return;
 				}
 
-				if (content.equals("imps"))
-				{
-					//Log.d(AdViewUtil.ADVIEW, "imps result:" + httpurlconnection.getHeaderField("result"));
-					
+				if (content.equals("imps")) {
+					// Log.d(AdViewUtil.ADVIEW, "imps result:" +
+					// httpurlconnection.getHeaderField("result"));
+
 					if (httpurlconnection.getHeaderField("result") != null) {
-						httpurlconnection.getHeaderField("result")
-						.equals("1"); 
+						httpurlconnection.getHeaderField("result").equals("1");
 						return;
 					}
-				}
-				else if ((content.equals("click")) && 
-					(httpurlconnection.getHeaderField("result") != null)) {
-					//Log.d(AdViewUtil.ADVIEW, "click result:" + httpurlconnection.getHeaderField("result"));
-					
-					httpurlconnection.getHeaderField("result")
-					.equals("1"); 
+				} else if ((content.equals("click"))
+						&& (httpurlconnection.getHeaderField("result") != null)) {
+					// Log.d(AdViewUtil.ADVIEW, "click result:" +
+					// httpurlconnection.getHeaderField("result"));
+
+					httpurlconnection.getHeaderField("result").equals("1");
 					return;
 				}
-			}
-			else
-			{
+			} else {
 				this.suizongAD.status = "2";
 			}
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			this.suizongAD.status = "2";
 			AdViewUtil.logError("httpRequest", e);
 		} finally {
@@ -351,47 +347,41 @@ public class SuizongInterfaceAdapter extends AdViewAdapter{
 		}
 	}
 
-	public String getLocalIPAddress()
-	{
-		try
-		{
-			for (Enumeration<NetworkInterface> mEnumeration = 
-				NetworkInterface.getNetworkInterfaces(); 
-				mEnumeration.hasMoreElements();)
-			{
-				NetworkInterface intf = (NetworkInterface)mEnumeration.nextElement();
+	public String getLocalIPAddress() {
+		try {
+			for (Enumeration<NetworkInterface> mEnumeration = NetworkInterface
+					.getNetworkInterfaces(); mEnumeration.hasMoreElements();) {
+				NetworkInterface intf = (NetworkInterface) mEnumeration
+						.nextElement();
 				for (Enumeration<InetAddress> enumIPAddr = intf
-					.getInetAddresses(); 
-					enumIPAddr.hasMoreElements(); )
-				{
-					InetAddress inetAddress = (InetAddress)enumIPAddr.nextElement();
+						.getInetAddresses(); enumIPAddr.hasMoreElements();) {
+					InetAddress inetAddress = (InetAddress) enumIPAddr
+							.nextElement();
 
-					if (!inetAddress.isLoopbackAddress())
-					{
+					if (!inetAddress.isLoopbackAddress()) {
 						return inetAddress.getHostAddress().toString();
 					}
 				}
 			}
 		} catch (SocketException ex) {
-		AdViewUtil.logError("error", ex);
+			AdViewUtil.logError("error", ex);
 		}
 		return "";
 	}
 
-	private String makePcheck(HashMap<String, String> map)
-	{
-		String appkey = (String)map.get("appkey");
-		String uuid = (String)map.get("uuid");
-		String client = (String)map.get("client");
-		String ip = (String)map.get("ip");
-		String s_u_sd = (String)map.get("density");
-		String uw = (String)map.get("aw");
-		String uh = (String)map.get("ah");
-		String pw = (String)map.get("pw");
-		String ph = (String)map.get("ph");
-		//String sdk = (String)map.get("sdk");
+	private String makePcheck(HashMap<String, String> map) {
+		String appkey = (String) map.get("appkey");
+		String uuid = (String) map.get("uuid");
+		String client = (String) map.get("client");
+		String ip = (String) map.get("ip");
+		String s_u_sd = (String) map.get("density");
+		String uw = (String) map.get("aw");
+		String uh = (String) map.get("ah");
+		String pw = (String) map.get("pw");
+		String ph = (String) map.get("ph");
+		// String sdk = (String)map.get("sdk");
 		String pcheck = null;
-		
+
 		try {
 			StringBuffer sb = new StringBuffer();
 			sb.append(appkey);
@@ -403,22 +393,22 @@ public class SuizongInterfaceAdapter extends AdViewAdapter{
 			sb.append(uh);
 			sb.append(pw);
 			sb.append(ph);
-			//sb.append(sdk);
+			// sb.append(sdk);
 			pcheck = SHA1.SHA2(sb.toString());
 		} catch (Exception e) {
 			return null;
 		}
-		
+
 		return pcheck;
 	}
 
-	private String makePcheck4GetBody(HashMap<String, String> map)
-	{
-		String adid = map.get("adid") == null ? "" : (String)map.get("adid");
-		String updatetime = map.get("updatetime") == null ? "" : (String)map.get("updatetime");
-		String sid = map.get("sid") == null ? "" : (String)map.get("sid");
+	private String makePcheck4GetBody(HashMap<String, String> map) {
+		String adid = map.get("adid") == null ? "" : (String) map.get("adid");
+		String updatetime = map.get("updatetime") == null ? "" : (String) map
+				.get("updatetime");
+		String sid = map.get("sid") == null ? "" : (String) map.get("sid");
 		String pcheck = null;
-		
+
 		try {
 			StringBuffer sb = new StringBuffer();
 			sb.append(adid);
@@ -432,54 +422,53 @@ public class SuizongInterfaceAdapter extends AdViewAdapter{
 		return pcheck;
 	}
 
-	private String makePcheck4Show(HashMap<String, String> map)
-	{
-		String appkey = (String)map.get("appkey");
-		String uuid = (String)map.get("uuid");
-		String client = (String)map.get("client");
-		String ip = (String)map.get("ip");
-		//String s_u_sd = (String)map.get("density");
-		//String uw = (String)map.get("aw");
-		//String uh = (String)map.get("ah");
-		//String pw = (String)map.get("pw");
-		//String ph = (String)map.get("ph");
-		String adid = map.get("adid") == null ? "" : (String)map.get("adid");
-		String updatetime = map.get("updatetime") == null ? "" : (String)map.get("updatetime");
-		String sid = map.get("sid") == null ? "" : (String)map.get("sid");
-		
+	private String makePcheck4Show(HashMap<String, String> map) {
+		String appkey = (String) map.get("appkey");
+		String uuid = (String) map.get("uuid");
+		String client = (String) map.get("client");
+		String ip = (String) map.get("ip");
+		// String s_u_sd = (String)map.get("density");
+		// String uw = (String)map.get("aw");
+		// String uh = (String)map.get("ah");
+		// String pw = (String)map.get("pw");
+		// String ph = (String)map.get("ph");
+		String adid = map.get("adid") == null ? "" : (String) map.get("adid");
+		String updatetime = map.get("updatetime") == null ? "" : (String) map
+				.get("updatetime");
+		String sid = map.get("sid") == null ? "" : (String) map.get("sid");
+
 		String pcheck = null;
-		
+
 		try {
 			StringBuffer sb = new StringBuffer();
 			sb.append(appkey);
 			sb.append(uuid);
 			sb.append(client);
 			sb.append(ip);
-			//sb.append(s_u_sd);
-			//sb.append(uw);
-			//sb.append(uh);
-			//sb.append(pw);
-			//sb.append(ph);
+			// sb.append(s_u_sd);
+			// sb.append(uw);
+			// sb.append(uh);
+			// sb.append(pw);
+			// sb.append(ph);
 			sb.append(adid);
 			sb.append(updatetime);
-			sb.append(sid);			
+			sb.append(sid);
 			pcheck = SHA1.SHA2(sb.toString());
 		} catch (Exception e) {
 			return null;
 		}
-		
+
 		return pcheck;
 	}
-	
-	public void requestSuizongAD(AdViewLayout adViewLayout, String key)
-	{
-		try
-		{	
+
+	public void requestSuizongAD(AdViewLayout adViewLayout, String key) {
+		try {
 			if (TextUtils.isEmpty(ip)) {
 				ip = getLocalIPAddress();
 			}
-			
-			this.suizongScreenManager = new SuizongScreenManager(adViewLayout.adViewManager.width);
+
+			this.suizongScreenManager = new SuizongScreenManager(
+					adViewLayout.adViewManager.width);
 
 			HashMap<String, String> map = new HashMap<String, String>();
 			map.put("appkey", key);
@@ -501,7 +490,7 @@ public class SuizongInterfaceAdapter extends AdViewAdapter{
 			if (!this.suizongAD.status.equals("1")) {
 				return;
 			}
-			
+
 			HashMap<String, String> map2 = new HashMap<String, String>();
 			map2.put("adid", this.suizongAD.adid);
 			map2.put("updatetime", this.suizongAD.updateTime);
@@ -523,24 +512,24 @@ public class SuizongInterfaceAdapter extends AdViewAdapter{
 					map3.put("uuid", mDeviceid);
 					map3.put("client", "2");
 					map3.put("ip", ip);
-					//map3.put("pw", Integer.toString(adViewLayout.adViewManager.width));
-					//map3.put("ph", Integer.toString(adViewLayout.adViewManager.height));
+					// map3.put("pw",
+					// Integer.toString(adViewLayout.adViewManager.width));
+					// map3.put("ph",
+					// Integer.toString(adViewLayout.adViewManager.height));
 					String pcheckGetBody = makePcheck4Show(map3);
 					map3.put("pcheck", pcheckGetBody);
-					map3.put("icheck", MD5.MD5Encode(pcheckGetBody + serial_key));
+					map3.put("icheck",
+							MD5.MD5Encode(pcheckGetBody + serial_key));
 					httpRequest(map3, "imps");
 				}
-			}
-			.start();
-		}
-		catch (Exception localException)
-		{
+			}.start();
+		} catch (Exception localException) {
 			localException.printStackTrace();
 		}
 	}
 
 	public void displaySuizongAD() {
-		Activity activity = (Activity)adViewLayout.activityReference.get();
+		Activity activity = (Activity) adViewLayout.activityReference.get();
 		if (activity == null) {
 			return;
 		}
@@ -550,98 +539,39 @@ public class SuizongInterfaceAdapter extends AdViewAdapter{
 
 		bannerView.getSettings().setJavaScriptEnabled(true);
 
-		//Log.d(AdViewUtil.ADVIEW, "this.suizongAD.data="+this.suizongAD.data);
-		
-		bannerView.loadDataWithBaseURL(SuizongApiAddr, 
-			this.suizongAD.data, "text/html", "UTF-8", null);	
+		// Log.d(AdViewUtil.ADVIEW, "this.suizongAD.data="+this.suizongAD.data);
+
+		bannerView.loadDataWithBaseURL(SuizongApiAddr, this.suizongAD.data,
+				"text/html", "UTF-8", null);
 
 		bannerView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
 
 		bannerView.setWebViewClient(new webViewClient());
 		adViewLayout.removeAllViews();
 		adViewLayout.reportImpression();
-		 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-			 (int)this.adWidth, (int)this.adHeight);
-		 layoutParams.addRule(13, -1);
+		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+				(int) this.adWidth, (int) this.adHeight);
+		layoutParams.addRule(13, -1);
 
 		adViewLayout.addView(bannerView, layoutParams);
 		adViewLayout.adViewManager.resetRollover();
 		adViewLayout.rotateThreadedDelayed();
 	}
 
-public class webViewClient extends WebViewClient
-{
-String url2="";
-private webViewClient()
-{
-}
- 
-public boolean shouldOverrideUrlLoading(WebView view, String url)
-{
-	url2 = url;
-	AdViewLayout adViewLayout = (AdViewLayout)SuizongInterfaceAdapter.this.adViewLayoutReference.get();
-	if (adViewLayout == null) {
-		AdViewUtil.logInfo("adViewLayout is null");
-	} else {
-		AdViewUtil.logInfo("shouldOverrideUrlLoading url="+url);
-		 if (url.toLowerCase().endsWith(".apk"))
-		{
-            String title = "下载提示";
-            String message = "确定要下载应用吗?";
-            String yesBtn = "确定";
-            String noBtn = "取消";
+	public class webViewClient extends WebViewClient {
+		String url2 = "";
 
-	           	AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-			builder.setMessage(message)
-			.setTitle(title)
-			.setPositiveButton(yesBtn, 
-			new DialogInterface.OnClickListener()
-				{
-					public void onClick(DialogInterface dialog, int which)
-					{
-						Intent intent = new Intent(mContext, DownloadService.class);
-						//intent.putExtra("adview_title", "");
-						intent.putExtra("adview_url",url2);
-						mContext.startService(intent);					
-					}
-				}).setNegativeButton(noBtn, 
-			new DialogInterface.OnClickListener()
-				{
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
-			builder.create();
-			builder.show();
-
+		private webViewClient() {
 		}
-		else
-	 	{
-			//Intent i = new Intent(Intent.ACTION_VIEW);
-			//i.setData(Uri.parse(url2));
-			//mContext.startActivity(i);
-			Intent intent = new Intent(mContext, AdviewWebView.class);
-			Bundle bundle = new Bundle();
-			bundle.putString("adviewurl", url2);
-			intent.putExtras(bundle);
-			mContext.startActivity(intent);	
-	 	}
+
 	}
-
-	return true;
-	}
-}
-
-
 
 }
 
-class DisplaySuizongADRunnable implements Runnable
-{
+class DisplaySuizongADRunnable implements Runnable {
 	private SuizongInterfaceAdapter suizongADAdapter;
 
-	public DisplaySuizongADRunnable(SuizongInterfaceAdapter suizongADAdapter)
-	{
+	public DisplaySuizongADRunnable(SuizongInterfaceAdapter suizongADAdapter) {
 		this.suizongADAdapter = suizongADAdapter;
 	}
 
@@ -654,29 +584,28 @@ class DisplaySuizongADRunnable implements Runnable
 class FetchSuizongADRunnable implements Runnable {
 	private SuizongInterfaceAdapter suizongADAdapter;
 	private Ration ration;
-	
-	public FetchSuizongADRunnable(SuizongInterfaceAdapter suizongADAdapter, Ration ration)
-	{
-	       this.suizongADAdapter = suizongADAdapter;
-	       this.ration = ration;
+
+	public FetchSuizongADRunnable(SuizongInterfaceAdapter suizongADAdapter,
+			Ration ration) {
+		this.suizongADAdapter = suizongADAdapter;
+		this.ration = ration;
 	}
-	 
+
 	public void run() {
 		AdViewUtil.logInfo("FetchSuizongADRunnable");
-	       AdViewLayout adViewLayout = this.suizongADAdapter.adViewLayoutReference.get();
-	       if (adViewLayout == null) {
+		AdViewLayout adViewLayout = this.suizongADAdapter.adViewLayoutReference
+				.get();
+		if (adViewLayout == null) {
 			return;
-	       }
-	       suizongADAdapter.requestSuizongAD(adViewLayout, ration.key);
-		   
-	       if (suizongADAdapter.suizongAD.status.equals("1"))
-	       {
-	       	adViewLayout.handler.post(new DisplaySuizongADRunnable(suizongADAdapter));
-	       }
-		else
-		{
+		}
+		suizongADAdapter.requestSuizongAD(adViewLayout, ration.key);
+
+		if (suizongADAdapter.suizongAD.status.equals("1")) {
+			adViewLayout.handler.post(new DisplaySuizongADRunnable(
+					suizongADAdapter));
+		} else {
 			AdViewUtil.logInfo("FetchSuizongAD failure");
 			adViewLayout.rotateThreadedPri(1);
-	       }	
+		}
 	}
 }

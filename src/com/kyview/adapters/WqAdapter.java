@@ -47,12 +47,9 @@ public class WqAdapter extends AdViewAdapter implements WQAdEventListener{
 
 		WQAdView adView = new WQAdView(activity);
 		adView.setAdEventListener(this);
-		//adView.init(ration.key, ration.key2); 
 	
 		adView.setAdPlatform("adviewc633659b4fda54", AdViewUtil.ADVIEW_VER); 
 		adView.init(ration.key, ration.key2);
-		//LayoutParams params = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-		//adViewLayout.addView(adView, params);
 		adViewLayout.AddSubView(adView);
 	}
 
@@ -65,8 +62,8 @@ public class WqAdapter extends AdViewAdapter implements WQAdEventListener{
 		if (adViewLayout == null) {
 			return;
 		}	
+		super.onSuccessed(adViewLayout, ration);
 		adViewLayout.adViewManager.resetRollover();
-		//adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0));
 		adViewLayout.rotateThreadedDelayed();
 		adViewLayout.reportImpression();	
 	}
@@ -80,7 +77,8 @@ public class WqAdapter extends AdViewAdapter implements WQAdEventListener{
 		if (adViewLayout == null) {
 			return;
 		}
-		adViewLayout.rotateThreadedPri(1);
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);
 	}
 
 	@Override
@@ -90,12 +88,12 @@ public class WqAdapter extends AdViewAdapter implements WQAdEventListener{
 
 	@Override
 	public void onWQAdClick(WQAdView arg0) {
-		AdViewUtil.logInfo("onAdClick");
-		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if(adViewLayout == null) {
-			return;
-		}
-		adViewLayout.reportClick();
+//		AdViewUtil.logInfo("onAdClick");
+//		AdViewLayout adViewLayout = adViewLayoutReference.get();
+//		if(adViewLayout == null) {
+//			return;
+//		}
+//		adViewLayout.reportClick();
 		
 	}
 

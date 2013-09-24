@@ -17,8 +17,7 @@ import com.kyview.util.AdViewUtil;
 //import android.view.ViewGroup.LayoutParams;
 //import android.widget.RelativeLayout;
 
-public class InmobiAdapter extends AdViewAdapter {
-	private IMAdView mIMAdView = null;
+public class InmobiAdapter extends AdViewAdapter  implements IMAdListener{
 	private IMAdRequest mAdRequest;
 	
 	private static int networkType() {
@@ -58,7 +57,7 @@ public class InmobiAdapter extends AdViewAdapter {
 		}
 		// set the test mode to true (Make sure you set the test mode to false
 		// when distributing to the users)
-		mIMAdView = new IMAdView(activity, IMAdView.INMOBI_AD_UNIT_320X50, ration.key);
+		IMAdView mIMAdView = new IMAdView(activity, IMAdView.INMOBI_AD_UNIT_320X50, ration.key);
 		mAdRequest = new IMAdRequest();
 		Map<String,String> reqParams = new HashMap<String,String>();
 		reqParams.put("tp","c_adview");
@@ -67,62 +66,53 @@ public class InmobiAdapter extends AdViewAdapter {
 
 
 		mIMAdView.setIMAdRequest(mAdRequest);
-		mIMAdView.setIMAdListener(mIMAdListener);
-		//adViewLayout.addView(mIMAdView);
-		//mIMAdView.setLayoutParams(new RelativeLayout.LayoutParams(0, 0));	
+		mIMAdView.setIMAdListener(this);
 		mIMAdView.loadNewAd(mAdRequest);
 		//adViewLayout.adViewManager.resetRollover(); 
 		//adViewLayout.rotateThreadedDelayed();
 
 	}
-	private IMAdListener mIMAdListener = new IMAdListener() {
 
-		@Override
-		public void onShowAdScreen(IMAdView adView) {
-			AdViewUtil.logInfo("ImMobi, onShowAdScreen");
-		}
-
-		@Override
-		public void onDismissAdScreen(IMAdView adView) {
-			AdViewUtil.logInfo("ImMobi, onShowAdScreen");
-		}
-
-		@Override
-		public void onLeaveApplication(IMAdView adView) {
-			AdViewUtil.logInfo("ImMobi, onShowAdScreen");
-		}
+	@Override
+	public void onAdRequestCompleted(IMAdView arg0) {
+		AdViewUtil.logInfo("InMobi success");
+		arg0.setIMAdListener(null);
 		
-		@Override
-		public void onAdRequestFailed(IMAdView adView, ErrorCode errorCode) {
-			AdViewUtil.logInfo("ImMobi failure, errorCode="+errorCode);
-			adView.setIMAdListener(null);
+		  AdViewLayout adViewLayout = adViewLayoutReference.get();
+		  if(adViewLayout == null) 
+			  return;
+		  super.onSuccessed(adViewLayout, ration);
+		  adViewLayout.adViewManager.resetRollover();
+		  adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0));
+		  adViewLayout.rotateThreadedDelayed(); 		
+	}
 
-			AdViewLayout adViewLayout = adViewLayoutReference.get();
-			if(adViewLayout == null) {
-				return; 
-			}
-			adViewLayout.rotateThreadedPri(1);
+	@Override
+	public void onAdRequestFailed(IMAdView arg0, ErrorCode arg1) {
+		AdViewUtil.logInfo("ImMobi failure, errorCode="+arg1);
+		arg0.setIMAdListener(null);
 
-		} 
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if(adViewLayout == null) 
+			return; 
+		super.onFailed(adViewLayout, ration);
+		//adViewLayout.rotateThreadedPri(1);		
+	}
 
-		@Override
-		public void onAdRequestCompleted(IMAdView adView) {
-			AdViewUtil.logInfo("InMobi success");
-			adView.setIMAdListener(null);
-			
-			  AdViewLayout adViewLayout = adViewLayoutReference.get();
-			  if(adViewLayout == null) {
-				  return;
-			  }
-			  //RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			  //layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-			  //mIMAdView.setLayoutParams(layoutParams);
-			  //mIMAdView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));				
-			  adViewLayout.adViewManager.resetRollover();
-			  adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView));
-			  adViewLayout.rotateThreadedDelayed(); 
-		}
-	};
+	@Override
+	public void onDismissAdScreen(IMAdView arg0) {
+		AdViewUtil.logInfo("ImMobi, onDismissAdScreen");		
+	}
+
+	@Override
+	public void onLeaveApplication(IMAdView arg0) {
+		AdViewUtil.logInfo("ImMobi, onLeaveApplication");		
+	}
+
+	@Override
+	public void onShowAdScreen(IMAdView arg0) {
+		AdViewUtil.logInfo("ImMobi, onShowAdScreen");		
+	}
 
 
 
