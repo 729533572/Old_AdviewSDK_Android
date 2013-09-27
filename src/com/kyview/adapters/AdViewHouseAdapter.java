@@ -53,7 +53,7 @@ public class AdViewHouseAdapter extends AdViewAdapter implements OnAdListener
 		KyAdView kyAdView=null;
 		int backGroundColor=Color.rgb(extra.bgRed, extra.bgGreen, extra.bgBlue);
 		int textColorr=Color.rgb(extra.fgRed, extra.fgGreen, extra.fgBlue);
-		kyAdView= new KyAdView(adViewLayout.getContext(),adViewLayout.keyAdView,ration.key2,backGroundColor,textColorr,ration.logo,(AdViewTargeting.getRunMode()==RunMode.TEST));   
+		kyAdView= new KyAdView(adViewLayout.getContext(),adViewLayout.keyAdView,ration.key2,ration.type,backGroundColor,textColorr,ration.logo,(AdViewTargeting.getRunMode()==RunMode.TEST));   
 		kyAdView.setOnAdListener(this);
 		kyAdView.setHorizontalScrollBarEnabled(false);
 		kyAdView.setVerticalScrollBarEnabled(false);

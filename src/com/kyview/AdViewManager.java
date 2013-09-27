@@ -34,6 +34,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager;
 
+import com.kuaiyou.adfill.util.Utils;
 import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.AdViewTargeting.UpdateMode;
 import com.kyview.adapters.AdViewAdapter;
@@ -58,7 +59,6 @@ public class AdViewManager {
 	Iterator<Ration> rollover_pri;
 
 	public int mSimulator = 0;
-
 
 	private final static String PREFS_STRING_CONFIG = "config";
 	private boolean youmiInit = true;
@@ -119,12 +119,12 @@ public class AdViewManager {
 		return configExpireTimeout;
 	}
 
-	private Ration afRation(){
-		Ration ration=new Ration();
-		ration.type=997;
+	private Ration afRation() {
+		Ration ration = new Ration();
+		ration.type = 997;
 		return ration;
 	}
-	
+
 	public synchronized Ration getRation() {
 		Random random = new Random();
 
@@ -176,25 +176,16 @@ public class AdViewManager {
 	}
 
 	public synchronized void resetRollover() {
-		if (AdViewLayout.isadFill) {
-			int total = AdViewUtil.common_count + AdViewUtil.adfill_count;
-			for (int i = 0; i < rationsList.size(); i++) {
-				if (this.rationsList.get(i).type==997)
-					this.rationsList.remove(i);
-			}
-			if (total != 0) {
-				if ((double) (AdViewUtil.adfill_count / total) > AdViewUtil.adfill_precent) {
-					if (this.rationsList.isEmpty())
-						this.rationsList.add(0,afRation());
-					else
-						this.rationsList.add(this.rationsList.size() - 1,
-								afRation());
-				} else
-					this.rationsList.add(0, afRation());
-			} else
-				this.rationsList.add(0, afRation());
+		Class<?> clazz = null;
+		try {
+			clazz = Class.forName("com.kuaiyou.adfill.util.Utweils");
+			if (null != clazz && AdViewLayout.isadFill)
+				Utils.resetList(AdViewUtil.adfill_count,
+						AdViewUtil.common_count, AdViewUtil.adfill_precent);
+		} catch (ClassNotFoundException e) {
+		} finally {
+			this.rollovers = this.rationsList.iterator();
 		}
-		this.rollovers = this.rationsList.iterator();
 	}
 
 	private String getLocalConfig(String sdkkey) {
@@ -280,7 +271,8 @@ public class AdViewManager {
 		String jsonString = "";
 		if (!bForceFromServer) {
 			jsonString = adViewPrefs.getString(PREFS_STRING_CONFIG, null);
-			mLastConfigTime = adViewPrefs.getLong(AdViewUtil.PREFS_STRING_TIMESTAMP, 0);
+			mLastConfigTime = adViewPrefs.getLong(
+					AdViewUtil.PREFS_STRING_TIMESTAMP, 0);
 			return jsonString;
 		}
 
@@ -374,7 +366,7 @@ public class AdViewManager {
 			JSONObject json = new JSONObject(jsonString);
 			AdViewUtil.configVer = json.optInt("version", 0);
 			if (json.has("adFill"))
-				if(json.getString("adFill").equals("0"))
+				if (json.getString("adFill").equals("0"))
 					AdViewLayout.isadFill = false;
 				else
 					AdViewLayout.isadFill = true;
@@ -415,7 +407,7 @@ public class AdViewManager {
 				json = json.getJSONObject("foreign_cfg");
 			}
 			if (json.has("adFill"))
-				if(json.getString("adFill").equals("0"))
+				if (json.getString("adFill").equals("0"))
 					AdViewLayout.isadFill = false;
 				else
 					AdViewLayout.isadFill = true;
@@ -557,13 +549,24 @@ public class AdViewManager {
 		Collections.sort(rationsList);
 		this.rationsList = rationsList;
 		// only for test
-//		AdViewLayout.isadFill = true;
-		if (AdViewLayout.isadFill)
-			if (this.rationsList.isEmpty()) {
-				this.rationsList.add(0, afRation());
-				totalweight = 100.0;
-			} else
-				this.rationsList.add(rationsList.size() - 1, afRation());
+		// AdViewLayout.isadFill = true;
+		if (AdViewLayout.isadFill) {
+			Class<?> clazz = null;
+			try {
+				clazz = Class.forName("com.kuaiyou.adfill.util.Utweils");
+				if (null != clazz)
+					if (this.rationsList.isEmpty()) {
+						this.rationsList.add(0, afRation());
+						totalweight = 100.0;
+					} else
+						this.rationsList
+								.add(rationsList.size() - 1, afRation());
+			} catch (ClassNotFoundException e) {
+			} finally {
+				this.rollovers = this.rationsList.iterator();
+			}
+		}
+
 		this.rollovers = this.rationsList.iterator();
 		this.totalWeight = totalweight;
 		/*

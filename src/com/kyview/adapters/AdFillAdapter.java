@@ -34,7 +34,7 @@ public class AdFillAdapter extends AdViewAdapter implements OnAdListener{
 		if (adViewLayout == null) 
 			return;
 		AdViewLayout.refreashTime=adViewLayout.extra.cycleTime*1000/2;
-		adFillView=new AdFillView(adViewLayout.getContext(),adViewLayout.keyAdView,(AdViewTargeting.getRunMode()==RunMode.TEST),AdViewLayout.refreashTime);
+		adFillView=new AdFillView(adViewLayout.getContext(),adViewLayout.keyAdView,ration.type,(AdViewTargeting.getRunMode()==RunMode.TEST),AdViewLayout.refreashTime);
 		adFillView.setOnAdListener(this);
 
 	}
