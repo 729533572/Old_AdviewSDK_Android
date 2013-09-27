@@ -178,7 +178,7 @@ public class AdViewManager {
 	public synchronized void resetRollover() {
 		Class<?> clazz = null;
 		try {
-			clazz = Class.forName("com.kuaiyou.adfill.util.Utweils");
+			clazz = Class.forName("com.kuaiyou.adfill.util.Utils");
 			if (null != clazz && AdViewLayout.isadFill)
 				Utils.resetList(AdViewUtil.adfill_count,
 						AdViewUtil.common_count, AdViewUtil.adfill_precent);
@@ -553,7 +553,7 @@ public class AdViewManager {
 		if (AdViewLayout.isadFill) {
 			Class<?> clazz = null;
 			try {
-				clazz = Class.forName("com.kuaiyou.adfill.util.Utweils");
+				clazz = Class.forName("com.kuaiyou.adfill.util.Utils");
 				if (null != clazz)
 					if (this.rationsList.isEmpty()) {
 						this.rationsList.add(0, afRation());
