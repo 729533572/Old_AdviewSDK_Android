@@ -8,9 +8,10 @@ import cn.aduu.android.AdViewSize;
 
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
+import com.kyview.AdViewTargeting;
+import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
-//import com.kyview.AdViewLayout.ViewAdRunnable;
 
 public class AduuAdapter extends AdViewAdapter implements AdListener{
 	private AdView adView = null;
@@ -38,7 +39,7 @@ public class AduuAdapter extends AdViewAdapter implements AdListener{
 		// TODO Auto-generated method stub	
 		
 
-		AdViewUtil.logInfo("Into Aduu new");
+		AdViewUtil.logInfo("Into Aduu");
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if (adViewLayout == null) {
 			return;
@@ -48,11 +49,17 @@ public class AduuAdapter extends AdViewAdapter implements AdListener{
 		if (activity == null) {
 			return;
 		}
-		
-		AdManager.init(activity, ration.key, ration.key2, 90,0, 0,61);//-9, 0, 2, 61
-		adView = new AdView(activity, null);
-		adView.setBannerSize(AdViewSize.SIZE_320X50);
-		adView.setSingleLine(false);
+		if(AdViewTargeting.getRunMode()==RunMode.TEST)
+			AdManager.init(activity, "debug00001", "debugdebug", 90,0, 0,"61");//-9, 0, 2, 61
+		else
+			AdManager.init(activity, ration.key, ration.key2, 90,0, 0,"61");//-9, 0, 2, 61
+		//设置渠道
+		cn.aduu.android.A.a(activity,"adview_sdk");
+		adView = new AdView(activity);
+//		adView.setTextColor(223121);
+		adView.setBannerSize(AdViewSize.FIT_SCREEN);
+//		adView.setBackgroundColor(Color.BLUE);
+//		adView.setBackgroundTransparent(100);
 		adView.setCloseable(false);
 		
 		adView.setAdViewListener(this);
@@ -76,7 +83,7 @@ public class AduuAdapter extends AdViewAdapter implements AdListener{
 	//@Override
 	public void onReceiveFail(int code) {
 		AdViewUtil.logInfo("aduu--onReceiveFail, code="+code);
-		adView.setAdViewListener(null);
+//		adView.setAdViewListener(null);
 
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if(adViewLayout == null) {

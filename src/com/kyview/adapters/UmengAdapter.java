@@ -9,7 +9,6 @@ import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
 import com.umengAd.android.AdView;
 import com.umengAd.controller.UmengAdListener;
-//import android.graphics.Color;
 
 
 public class UmengAdapter extends AdViewAdapter implements UmengAdListener{

@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +30,11 @@ import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
+
+import com.kyview.AdViewTargeting;
+import com.kyview.AdViewTargeting.RunMode;
+import com.kyview.statistics.LogInterface;
+import com.kyview.statistics.StatisticsBean;
 
 public class AdViewUtil {
 	public static final boolean TEST_SERVER = false; // false
@@ -55,7 +61,12 @@ public class AdViewUtil {
 	public static String SERVER_HOST = "report.adview.cn";
 	public static String CONFIG_HOST = "config.adview.cn";
 
-	public static String TESTSERVER_HOST = "211.103.153.122";// 124.207.233.119";
+	public static String TESTSERVER_HOST = "test2012.adview.cn";// 124.207.233.119";
+
+	public static List<StatisticsBean> statisticsList = null;
+
+	public static StringBuilder sb = null;
+	private static LogInterface logInterface = null;
 
 	// public static final String urlConfig =
 	// "http://config.adview.cn/agent/agent1_android.php?appid=%s&appver=%d&client=0&simulator=%d&location=%s&time=%d&sdkver=%s";
@@ -68,15 +79,16 @@ public class AdViewUtil {
 	// Don't change anything below this line
 	/***********************************************/
 
-	public static final int VERSION = 200;
+	public static final int VERSION = 204;
 
-	public static final String ADVIEW = "AdView SDK v2.0.0";
-	public static final String ADVIEW4YUNYUN = "FRADVIEW_2.0.0";
-	public static final String ADVIEW_VER = "2.0.0";
+	public static final String ADVIEW = "AdView SDK v2.0.4";
+	public static final String ADVIEW4YUNYUN = "FRADVIEW_2.0.4";
+	public static final String ADVIEW_VER = "2.0.4";
 
 	// Could be an enum, but this gives us a slight performance improvement
 	// abroad
 	public static final int NETWORK_TYPE_ADFILL = 997;
+	public static final int NETWORK_TYPE_ADBID = 998;
 
 	public static final int NETWORK_TYPE_ADMOB = 1;
 	public static final int NETWORK_TYPE_GREYSTRIP = 2;
@@ -315,30 +327,58 @@ public class AdViewUtil {
 
 	/****************** Android的五种logcat输出的其中四种 *****************************/
 	public static void logWarn(String info, Throwable r) {
-		// if (AdViewTargeting.getRunMode() == RunMode.TEST)
-		Log.w(AdViewUtil.ADVIEW, info, r);
+		if (AdViewTargeting.getRunMode() == RunMode.TEST)
+			Log.w(AdViewUtil.ADVIEW, info, r);
+		if (null == sb)
+			sb = new StringBuilder();
+		sb.append(r.toString() + "\n");
+		if (null != logInterface)
+			logInterface.onLogChange(sb);
 	}
 
 	public static void logDebug(String info) {
-		// if (AdViewTargeting.getRunMode() == RunMode.TEST)
-		Log.d(AdViewUtil.ADVIEW, info);
+		if (AdViewTargeting.getRunMode() == RunMode.TEST)
+			Log.d(AdViewUtil.ADVIEW, info);
+		if (null == sb)
+			sb = new StringBuilder();
+		sb.append(info + "\n");
+		if (null != logInterface)
+			logInterface.onLogChange(sb);
+
 	}
 
 	public static void logError(String info, Throwable r) {
-		// if (AdViewTargeting.getRunMode() == RunMode.TEST)
-		Log.e(AdViewUtil.ADVIEW, info, r);
+		if (AdViewTargeting.getRunMode() == RunMode.TEST)
+			Log.e(AdViewUtil.ADVIEW, info, r);
+		if (null == sb)
+			sb = new StringBuilder();
+		sb.append(r.toString() + "\n");
+		if (null != logInterface)
+			logInterface.onLogChange(sb);
 	}
 
 	public static void logInfo(String info) {
-		// if (AdViewTargeting.getRunMode() == RunMode.TEST)
-		Log.i(AdViewUtil.ADVIEW, info);
+		if (AdViewTargeting.getRunMode() == RunMode.TEST)
+			Log.i(AdViewUtil.ADVIEW, info);
+		if (null == sb)
+			sb = new StringBuilder();
+		sb.append(info + "\n");
+		if (null != logInterface)
+			logInterface.onLogChange(sb);
 	}
 
-	public static void writeLogtoFile(String logName, String text) {
+	public static void setLogInterface(LogInterface logInterface) {
+		AdViewUtil.logInterface = logInterface;
+	}
+
+	public static void writeLogtoFile(String logName, boolean isPrintTime,
+			String text) {
 		Date nowtime = new Date();
 		SimpleDateFormat dateformat1 = new SimpleDateFormat(
 				"yyyy-MM-dd HH:mm:ss.SSS");
 		String needWriteFiel = dateformat1.format(nowtime);
+		if (!isPrintTime)
+			needWriteFiel = "";
 		String needWriteMessage = needWriteFiel + " " + text;
 		FileWriter filerWriter = null;
 		BufferedWriter bufWriter = null;
@@ -375,23 +415,6 @@ public class AdViewUtil {
 
 		}
 	}
-
-	// public static void openWebBrowser(final String url, final Context
-	// context) {
-	//
-	// if (url.toLowerCase().endsWith(".apk")) {
-	// Intent i = new Intent(context, DownloadService.class);
-	// i.putExtra("adview_url", url);
-	// context.startService(i);
-	// } else {
-	// Intent intent = new Intent(context, AdviewWebView.class);
-	// Bundle bundle = new Bundle();
-	// bundle.putString("adviewurl", url);
-	// intent.putExtras(bundle);
-	// context.startActivity(intent);
-	// }
-	//
-	// }
 
 	public static void storeInfo(Context context, String keyAdView,
 			int rationType, String typeName) {

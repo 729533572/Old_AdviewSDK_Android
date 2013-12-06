@@ -3,6 +3,9 @@ package com.kyview;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,8 +43,11 @@ import com.kyview.AdViewTargeting.SwitcherMode;
 import com.kyview.adapters.AdViewAdapter;
 import com.kyview.obj.Extra;
 import com.kyview.obj.Ration;
+import com.kyview.statistics.StatisticsBean;
+import com.kyview.statistics.StatisticsInterface;
 import com.kyview.util.AdViewReqManager;
 import com.kyview.util.AdViewUtil;
+import com.kyview.util.CrashHandler;
 import com.kyview.util.MD5;
 
 //import com.kyview.AdViewTargeting.Channel;
@@ -67,9 +73,13 @@ public class AdViewLayout extends RelativeLayout {
 	public static String bundle = "";
 	public static int appVersion;
 
+	public static final int CLICK = 0;
+	public static final int IMPRESSION = 1;
+	public static final int FAIL = 2;
+
 	public Extra extra;
-	private int imageWidth = 75;
-	private int imageHeight = 75;
+	private int imageWidth = 38;
+	private int imageHeight = 38;
 	public static boolean isadFill = false;
 	public RelativeLayout umengView = null;
 	public static int refreashTime = 15 * 1000;
@@ -85,6 +95,7 @@ public class AdViewLayout extends RelativeLayout {
 	public double mDensity = 0D;
 
 	public AdViewInterface adViewInterface;
+	public StatisticsInterface statisticsInterface;
 
 	public AdViewManager adViewManager;
 
@@ -145,10 +156,16 @@ public class AdViewLayout extends RelativeLayout {
 
 		setHorizontalScrollBarEnabled(false);
 		setVerticalScrollBarEnabled(false);
+		CatchCrashInfo(context);
 		getAppInfo(context);
 		// appReport();
 		this.maxWidth = 0;
 		this.maxHeight = 0;
+	}
+
+	private void CatchCrashInfo(Context context) {
+		CrashHandler crashHandler = CrashHandler.getInstance();
+		crashHandler.init(context);
 	}
 
 	public AdViewLayout(Context context, AttributeSet attrs) {
@@ -170,6 +187,7 @@ public class AdViewLayout extends RelativeLayout {
 				TimeUnit.SECONDS);
 		setHorizontalScrollBarEnabled(false);
 		setVerticalScrollBarEnabled(false);
+		CatchCrashInfo(context);
 		getAppInfo(context);
 		// appReport();
 		this.maxWidth = 0;
@@ -188,24 +206,19 @@ public class AdViewLayout extends RelativeLayout {
 					.getMetrics(dm);
 			mDensity = dm.density;
 		}
-		resoursePath = "/com/kyview/assets/close_75.png";
-		if (mDensity > 1.6) {
-			resoursePath = "/com/kyview/assets/close_160.png";
-			imageWidth = 160;
-			imageHeight = 160;
-		} else if (mDensity > 2.0) {
-			resoursePath = "/com/kyview/assets/close_224.png";
-			imageWidth = 224;
-			imageHeight = 224;
-		}
+		resoursePath = "/com/kyview/assets/close_new.png";
+		imageWidth = (int) (adViewManager.width / 6.4 / 3);
+		imageHeight = (int) (adViewManager.width / 6.4 / 3);
+		
 		ImageView closeButton = new ImageView(adViewLayout.getContext());
 		closeButton.setClickable(true);
 		BitmapDrawable btnClose = new BitmapDrawable(getClass()
 				.getResourceAsStream(resoursePath));
 		closeButton.setBackgroundDrawable(btnClose);
-		LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT);
-		lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+		LayoutParams lp = new LayoutParams(
+				(int) (adViewManager.width / 6.4 / 3),
+				(int) (adViewManager.width / 6.4 / 3));
+		lp.leftMargin=adViewManager.width-(int)(adViewManager.width / 6.4 / 3)-2;
 		lp.addRule(RelativeLayout.CENTER_VERTICAL);
 		adViewLayout.addView(closeButton, lp);
 		closeButton.setOnClickListener(new OnClickListener() {
@@ -253,7 +266,9 @@ public class AdViewLayout extends RelativeLayout {
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
 		int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-
+		if (null != adViewManager)
+			widthMeasureSpec = MeasureSpec.makeMeasureSpec(adViewManager.width,
+					MeasureSpec.AT_MOST);
 		if (maxWidth > 0 && widthSize > maxWidth) {
 			widthMeasureSpec = MeasureSpec.makeMeasureSpec(maxWidth,
 					MeasureSpec.AT_MOST);
@@ -501,8 +516,6 @@ public class AdViewLayout extends RelativeLayout {
 	}
 
 	private void countImpression() {
-		// AdViewUtil.storeInfo(activityReference.get(),
-		// adViewManager.keyAdView, activeRation.type, "show");
 		if (activeRation != null) {
 			String url = String.format(AdViewUtil.urlImpression,
 					adViewManager.keyAdView, activeRation.nid,
@@ -513,12 +526,13 @@ public class AdViewLayout extends RelativeLayout {
 			scheduler.schedule(new PingUrlRunnable(url), 0, TimeUnit.SECONDS);
 			AdViewReqManager.getInstance(this.getContext()).storeInfo(this,
 					activeRation.type, AdViewUtil.COUNTSHOW);
-			if (activeRation.type != 0)
+			if (activeRation.type != 997)
 				AdViewUtil.common_count += 1;
 
 			if (adViewInterface != null)
 				adViewInterface.onDisplayAd();
-			// AdViewUtil.logInfo(url);
+
+			listStatistics(activeRation.name, AdViewLayout.IMPRESSION, 1);
 		}
 	}
 
@@ -679,13 +693,13 @@ public class AdViewLayout extends RelativeLayout {
 			// TODO: handle exception
 		}
 		try {
-			appName=URLEncoder.encode(appName,HTTP.UTF_8);
+			appName = URLEncoder.encode(appName, HTTP.UTF_8);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			appName="";
+			appName = "";
 		}
-		
+
 		return appName;
 	}
 
@@ -695,6 +709,7 @@ public class AdViewLayout extends RelativeLayout {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			closeAble = iscloseBtn(event);
+			listStatistics(activeRation.name, CLICK, 1);
 			// AdViewUtil.logInfo("Intercepted ACTION_DOWN event");
 			if (activeRation != null) {
 
@@ -704,14 +719,16 @@ public class AdViewLayout extends RelativeLayout {
 						|| activeRation.type == AdViewUtil.NETWORK_TYPE_SMARTAD
 						|| activeRation.type == AdViewUtil.NETWORK_TYPE_ADSAGE
 						|| activeRation.type == AdViewUtil.NETWORK_TYPE_ADVIEWAD
-						|| activeRation.type == AdViewUtil.NETWORK_TYPE_PUNCHBOX)
+						|| activeRation.type == AdViewUtil.NETWORK_TYPE_ADCHINA
+						|| activeRation.type == AdViewUtil.NETWORK_TYPE_WQ)
 					return false;
 
 				AdViewUtil
 						.logInfo("Intercepted ACTION_DOWN event 2, activeRation.type="
 								+ activeRation.type);
 				if (activeRation.type == AdViewUtil.NETWORK_TYPE_SUIZONG
-						|| activeRation.type == AdViewUtil.NETWORK_TYPE_ADFILL)// ||
+						|| activeRation.type == AdViewUtil.NETWORK_TYPE_ADFILL
+						|| activeRation.type == AdViewUtil.NETWORK_TYPE_ADBID)// ||
 				// activeRation.type
 				// ==
 				// AdViewUtil.NETWORK_TYPE_INMOBI)
@@ -724,7 +741,6 @@ public class AdViewLayout extends RelativeLayout {
 					} catch (Throwable e) {
 						AdViewUtil.logError("onClick", e);
 					}
-					if(activeRation.type != AdViewUtil.NETWORK_TYPE_ADFILL)
 					return false;
 				}
 				if (AdViewTargeting.getSwitcherMode() == SwitcherMode.DEFAULT
@@ -741,8 +757,6 @@ public class AdViewLayout extends RelativeLayout {
 	private int isMissTouch(MotionEvent event) {
 		float x = event.getX();
 		float y = event.getY();
-		AdViewUtil.logInfo("eventY: " + event.getY() + "\neventX: "
-				+ event.getX());
 		return x >= this.getWidth() / 16 && x <= this.getWidth() * 15 / 16
 				&& y >= this.getHeight() / 6 && y <= this.getHeight() * 5 / 6 ? 0
 				: 1;
@@ -762,8 +776,12 @@ public class AdViewLayout extends RelativeLayout {
 		mDensity = dm.density;
 		screenWidth = dm.widthPixels;
 		screenHeight = this.getHeight();
-		height = (int) (imageHeight / mDensity);
-		width = (int) (imageWidth / mDensity);
+//		height = (int) (imageHeight / mDensity);
+//		width = (int) (imageWidth / mDensity);
+		height=imageHeight;
+		width=imageWidth;
+		x = screenWidth / 2 - adViewManager.width / 2 + x-2;
+		screenWidth = screenWidth / 2 + adViewManager.width / 2;
 		return AdViewTargeting.getSwitcherMode() == SwitcherMode.DEFAULT ? true
 				: (x >= (screenWidth - width)
 						&& y >= (screenHeight - height) / 2 && y <= screenHeight
@@ -772,6 +790,10 @@ public class AdViewLayout extends RelativeLayout {
 
 	public void setAdViewInterface(AdViewInterface adViewInterface) {
 		this.adViewInterface = adViewInterface;
+	}
+
+	public void setStatisticsInterface(StatisticsInterface statisticsInterface) {
+		this.statisticsInterface = statisticsInterface;
 	}
 
 	private class InitRunnable implements Runnable {
@@ -948,56 +970,85 @@ public class AdViewLayout extends RelativeLayout {
 		}
 	}
 
-	// private boolean isTimeToFill() {
-	// boolean isAllDisplayed = false;
-	// if (!isadFill)
-	// return false;
-	//
-	// if (AdViewUtil.common_count != 0) {
-	// double total = (AdViewUtil.common_count+AdViewUtil.adfill_count);
-	// if (AdViewUtil.adfill_count / total > 0.1) {
-	// if (null != AdViewUtil.displayRec)
-	// if (adViewManager.getRationList().size()-1 == AdViewUtil.displayRec
-	// .size())
-	// isAllDisplayed = true;
-	// } else
-	// isAllDisplayed = true;
-	// } else
-	// isAllDisplayed = false;
-	// // isAllDisplayed = true;
-	// return isAllDisplayed;
-	// }
-	// private static class PingKyAdviewRunnable implements Runnable {
-	// private String url;
-	// private String content;
-	//
-	// public PingKyAdviewRunnable(String url, String content) {
-	// this.url = url;
-	// this.content = content;
-	// }
-	//
-	// public void run() {
-	// HttpPost httpRequest = new HttpPost(url);
-	// List<NameValuePair> params = new ArrayList<NameValuePair>();
-	// params.add(new BasicNameValuePair("name", content));
-	// HttpClient httpClient = new DefaultHttpClient();
-	// try {
-	// httpRequest.setEntity(new UrlEncodedFormEntity(params,
-	// HTTP.UTF_8));
-	// HttpResponse httpResponse = httpClient.execute(httpRequest);
-	// if (httpResponse.getStatusLine().getStatusCode() == 200) {
-	//
-	// EntityUtils.toString(httpResponse.getEntity(), "UTF_8");
-	// }
-	// } catch (ClientProtocolException e) {
-	// e.printStackTrace();
-	// } catch (UnsupportedEncodingException e) {
-	// e.printStackTrace();
-	// } catch (IOException e) {
-	// e.printStackTrace();
-	// } finally {
-	// httpClient.getConnectionManager().shutdown();
-	// }
-	// }
-	// }
+	public boolean cleanList() {
+		if (null != AdViewUtil.statisticsList) {
+			AdViewUtil.statisticsList.clear();
+			return true;
+		}
+		return false;
+	}
+
+	public void saveStatistics() {
+		String temp = ";";
+		Date date = new Date();
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+				"yyyy-MM-dd_HH:mm.ss ");
+		if (null != AdViewUtil.statisticsList)
+			for (int i = 0; i < AdViewUtil.statisticsList.size(); i++) {
+				temp = temp + AdViewUtil.statisticsList.get(i).getAdName()
+						+ "- ";
+				temp = temp + "展示："
+						+ AdViewUtil.statisticsList.get(i).getImpression();
+				temp = temp + ",点击："
+						+ AdViewUtil.statisticsList.get(i).getClick();
+				temp = temp + ",失败："
+						+ AdViewUtil.statisticsList.get(i).getFailed() + ";\n";
+			}
+		if (temp.length() > 1)
+			AdViewUtil.writeLogtoFile(simpleDateFormat.format(date), false,
+					temp.substring(1, temp.length()));
+
+	}
+
+	public synchronized void listStatistics(String name, int type, int count) {
+		int temp = 0;
+		boolean isFound = false;
+		if (null == AdViewUtil.statisticsList)
+			AdViewUtil.statisticsList = new ArrayList<StatisticsBean>();
+
+		for (int i = 0; i < AdViewUtil.statisticsList.size(); i++) {
+			if (AdViewUtil.statisticsList.get(i).getAdName().equals(name)) {
+				switch (type) {
+				case CLICK:
+					temp = AdViewUtil.statisticsList.get(i).getClick();
+					AdViewUtil.statisticsList.get(i).setClick(temp + count);
+					break;
+				case IMPRESSION:
+					temp = AdViewUtil.statisticsList.get(i).getImpression();
+					AdViewUtil.statisticsList.get(i)
+							.setImpression(temp + count);
+					break;
+
+				case FAIL:
+					temp = AdViewUtil.statisticsList.get(i).getFailed();
+					AdViewUtil.statisticsList.get(i).setFailed(temp + count);
+					break;
+
+				}
+				isFound = true;
+			}
+
+		}
+		if (!isFound) {
+			StatisticsBean statisticsBean = new StatisticsBean();
+			statisticsBean.setAdName(name);
+			switch (type) {
+			case CLICK:
+				statisticsBean.setClick(count);
+				break;
+			case IMPRESSION:
+				statisticsBean.setImpression(count);
+				break;
+			case FAIL:
+				statisticsBean.setFailed(count);
+				break;
+			}
+			AdViewUtil.statisticsList.add(statisticsBean);
+		}
+
+		if (null != statisticsInterface)
+			statisticsInterface.onListChange(AdViewUtil.statisticsList);
+
+	}
+
 }

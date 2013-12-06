@@ -55,17 +55,18 @@ public class WqAdapter extends AdViewAdapter implements WQAdEventListener{
 
 	@Override
 	public void onWQAdReceived(WQAdView adView) {
+
 		AdViewUtil.logInfo("onWQAdReceived");
-		adView.setAdEventListener(null);
+		adView.setRefreshable(false);
 		
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if (adViewLayout == null) {
 			return;
 		}	
+//		adViewLayout.AddSubView(adView);
 		super.onSuccessed(adViewLayout, ration);
 		adViewLayout.adViewManager.resetRollover();
 		adViewLayout.rotateThreadedDelayed();
-		adViewLayout.reportImpression();	
 	}
 
 	@Override
@@ -78,28 +79,31 @@ public class WqAdapter extends AdViewAdapter implements WQAdEventListener{
 			return;
 		}
 		super.onFailed(adViewLayout, ration);
-		//adViewLayout.rotateThreadedPri(1);
 	}
 
 	@Override
 	public void onWQAdDismiss(WQAdView arg0) {
-		AdViewUtil.logInfo("onWQAdDismiss");
 	}
 
 	@Override
 	public void onWQAdClick(WQAdView arg0) {
-//		AdViewUtil.logInfo("onAdClick");
-//		AdViewLayout adViewLayout = adViewLayoutReference.get();
-//		if(adViewLayout == null) {
-//			return;
-//		}
-//		adViewLayout.reportClick();
+		AdViewUtil.logInfo("onAdClick");
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if(adViewLayout == null) {
+			return;
+		}
+		adViewLayout.reportClick();
 		
 	}
 
 	@Override
 	public void onWQAdView(WQAdView arg0) {
-
+		AdViewUtil.logInfo("onWQAdView");
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if (adViewLayout == null) {
+			return;
+		}	
+		adViewLayout.reportImpression();
 	}
 		
 }

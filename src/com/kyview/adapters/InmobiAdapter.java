@@ -5,20 +5,17 @@ import java.util.Map;
 
 import android.app.Activity;
 
-import com.inmobi.androidsdk.IMAdListener;
-import com.inmobi.androidsdk.IMAdRequest;
-import com.inmobi.androidsdk.IMAdRequest.ErrorCode;
-import com.inmobi.androidsdk.IMAdView;
+import com.inmobi.commons.InMobi;
+import com.inmobi.monetization.IMBanner;
+import com.inmobi.monetization.IMBannerListener;
+import com.inmobi.monetization.IMErrorCode;
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
 import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
-//import android.view.ViewGroup.LayoutParams;
-//import android.widget.RelativeLayout;
 
-public class InmobiAdapter extends AdViewAdapter  implements IMAdListener{
-	private IMAdRequest mAdRequest;
+public class InmobiAdapter extends AdViewAdapter  implements IMBannerListener{
 	
 	private static int networkType() {
 		return AdViewUtil.NETWORK_TYPE_INMOBI;
@@ -26,7 +23,7 @@ public class InmobiAdapter extends AdViewAdapter  implements IMAdListener{
 	
 	public static void load(AdViewAdRegistry registry) {
 		try {
-			if(Class.forName("com.inmobi.androidsdk.IMAdView") != null) {
+			if(Class.forName("com.inmobi.monetization.IMBannerListener") != null) {
 			
 				registry.registerClass(networkType(), InmobiAdapter.class);
 			}
@@ -57,26 +54,44 @@ public class InmobiAdapter extends AdViewAdapter  implements IMAdListener{
 		}
 		// set the test mode to true (Make sure you set the test mode to false
 		// when distributing to the users)
-		IMAdView mIMAdView = new IMAdView(activity, IMAdView.INMOBI_AD_UNIT_320X50, ration.key);
-		mAdRequest = new IMAdRequest();
+		
+		InMobi.initialize(activity, ration.key);
+		
+		IMBanner bannerAdView = new IMBanner(activity,ration.key,IMBanner.INMOBI_AD_UNIT_320X50);
+	
 		Map<String,String> reqParams = new HashMap<String,String>();
 		reqParams.put("tp","c_adview");
-		mAdRequest.setRequestParams(reqParams);
 
+		bannerAdView.setRequestParams(reqParams);
+		bannerAdView.setIMBannerListener(this);
+		bannerAdView.loadBanner();
 
-
-		mIMAdView.setIMAdRequest(mAdRequest);
-		mIMAdView.setIMAdListener(this);
-		mIMAdView.loadNewAd(mAdRequest);
-		//adViewLayout.adViewManager.resetRollover(); 
-		//adViewLayout.rotateThreadedDelayed();
 
 	}
 
+
 	@Override
-	public void onAdRequestCompleted(IMAdView arg0) {
+	public void onBannerInteraction(IMBanner arg0, Map<String, String> arg1) {
+		// TODO Auto-generated method stub
+		AdViewUtil.logInfo("InMobi onBannerInteraction");
+	}
+
+	@Override
+	public void onBannerRequestFailed(IMBanner arg0, IMErrorCode arg1) {
+		AdViewUtil.logInfo("ImMobi failure "+arg1.toString());
+		arg0.setIMBannerListener(null);
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if(adViewLayout == null) 
+			return; 
+		super.onFailed(adViewLayout, ration);
+	}
+
+	@Override
+	public void onBannerRequestSucceeded(IMBanner arg0) {
+		// TODO Auto-generated method stub
 		AdViewUtil.logInfo("InMobi success");
-		arg0.setIMAdListener(null);
+
+		arg0.setIMBannerListener(null);
 		
 		  AdViewLayout adViewLayout = adViewLayoutReference.get();
 		  if(adViewLayout == null) 
@@ -84,34 +99,25 @@ public class InmobiAdapter extends AdViewAdapter  implements IMAdListener{
 		  super.onSuccessed(adViewLayout, ration);
 		  adViewLayout.adViewManager.resetRollover();
 		  adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0));
-		  adViewLayout.rotateThreadedDelayed(); 		
+		  adViewLayout.rotateThreadedDelayed(); 
 	}
 
 	@Override
-	public void onAdRequestFailed(IMAdView arg0, ErrorCode arg1) {
-		AdViewUtil.logInfo("ImMobi failure, errorCode="+arg1);
-		arg0.setIMAdListener(null);
-
-		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if(adViewLayout == null) 
-			return; 
-		super.onFailed(adViewLayout, ration);
-		//adViewLayout.rotateThreadedPri(1);		
+	public void onDismissBannerScreen(IMBanner arg0) {
+		// TODO Auto-generated method stub
+		AdViewUtil.logInfo("InMobi onDismissBannerScreen");
 	}
 
 	@Override
-	public void onDismissAdScreen(IMAdView arg0) {
-		AdViewUtil.logInfo("ImMobi, onDismissAdScreen");		
+	public void onLeaveApplication(IMBanner arg0) {
+		// TODO Auto-generated method stub
+		AdViewUtil.logInfo("InMobi onLeaveApplication");
 	}
 
 	@Override
-	public void onLeaveApplication(IMAdView arg0) {
-		AdViewUtil.logInfo("ImMobi, onLeaveApplication");		
-	}
-
-	@Override
-	public void onShowAdScreen(IMAdView arg0) {
-		AdViewUtil.logInfo("ImMobi, onShowAdScreen");		
+	public void onShowBannerScreen(IMBanner arg0) {
+		// TODO Auto-generated method stub
+		AdViewUtil.logInfo("InMobi onShowBannerScreen");
 	}
 
 

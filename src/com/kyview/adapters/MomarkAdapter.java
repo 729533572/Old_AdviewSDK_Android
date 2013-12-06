@@ -11,7 +11,6 @@ import com.kyview.AdViewLayout;
 import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
-//import android.graphics.Color;
 
 public class MomarkAdapter extends AdViewAdapter implements AdViewListener{
 	AdView adView;

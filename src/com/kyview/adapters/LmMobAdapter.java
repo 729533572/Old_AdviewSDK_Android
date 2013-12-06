@@ -13,7 +13,6 @@ import com.kyview.AdViewTargeting;
 import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
-//import com.kyview.AdViewLayout.ViewAdRunnable;
 
 public class LmMobAdapter extends AdViewAdapter implements LMAdListener{
 

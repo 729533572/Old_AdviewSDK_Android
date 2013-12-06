@@ -9,7 +9,6 @@ import com.kyview.util.AdViewUtil;
 import com.vpon.adon.android.AdListener;
 import com.vpon.adon.android.AdOnPlatform;
 import com.vpon.adon.android.AdView;
-//import com.kyview.AdViewLayout.ViewAdRunnable;
 
 public class VponAdapter extends AdViewAdapter implements AdListener{
 	private int adHeight;

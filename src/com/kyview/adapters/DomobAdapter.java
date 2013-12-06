@@ -10,9 +10,6 @@ import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
-//import android.graphics.Color;
-//import cn.domob.android.ads.DomobAdListener;
-//import com.kyview.obj.Extra;
 
 public class DomobAdapter extends AdViewAdapter implements DomobAdEventListener {
 

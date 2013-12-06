@@ -10,7 +10,6 @@ import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
 import com.mt.airad.AirAD;
 import com.mt.airad.AirADListener;
-//import com.kyview.AdViewLayout.ViewAdRunnable;
 
 //import android.widget.RelativeLayout;
 

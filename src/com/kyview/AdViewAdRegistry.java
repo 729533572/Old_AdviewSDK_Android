@@ -8,6 +8,7 @@ import com.kyview.adapters.AdFillAdapter;
 import com.kyview.adapters.AdMobAdapter;
 import com.kyview.adapters.AdTouchAdapter;
 import com.kyview.adapters.AdViewAdapter;
+import com.kyview.adapters.AdViewBIDAdapter;
 import com.kyview.adapters.AdViewHouseAdapter;
 import com.kyview.adapters.AdlantisAdapter;
 import com.kyview.adapters.AduuAdapter;
@@ -42,7 +43,6 @@ import com.kyview.adapters.YoumiAdapter;
 import com.kyview.adapters.YunYunAdapter;
 import com.kyview.adapters.ZestADZAdapter;
 import com.kyview.adapters.ZhiDianAdapter;
-//import com.kyview.adapters.AduuInterfaceAdapter;
 
 
 public class AdViewAdRegistry { 
@@ -73,7 +73,6 @@ public class AdViewAdRegistry {
 		try {AdlantisAdapter.load(this);}catch(Error e){}
 		try {AdMobAdapter.load(this);}catch(Error e){}
 		try {AdTouchAdapter.load(this);}catch(Error e){}
-		//try {AduuInterfaceAdapter.load(this);}catch(Error e){}
 		try {AduuAdapter.load(this);}catch(Error e){}
 		try {AdwoAdapter.load(this);}catch(Error e){}		
 		try {AirAdAdapter.load(this);}catch(Error e){}
@@ -107,17 +106,17 @@ public class AdViewAdRegistry {
 		try {PunchBoxAdapter.load(this);}catch(Error e){}	
 		try {AdFillAdapter.load(this);}catch(Error e){}	
 		try {ZhiDianAdapter.load(this);}catch(Error e){}
+		try {AdViewBIDAdapter.load(this);}catch(Error e){}
+		
 	}
 	
 	public void registerClass(Integer adType, Class<? extends AdViewAdapter> adapterClass) {
-//		mAdapterMap.put(Integer.valueOf(adType), adapterClass);
 		sparseArray.put(adType, adapterClass);
 		
 	}
 	
 	public Class<? extends AdViewAdapter> adapterClassForAdType(Integer adType) {
 		return sparseArray.get(adType);
-//		return mAdapterMap.get(Integer.valueOf(adType));
 	}
 	
 }

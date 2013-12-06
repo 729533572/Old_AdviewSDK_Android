@@ -18,6 +18,13 @@ public abstract class AdViewAdapter {
 	static AdViewAdapter adapter, lastAdapter;
 	private Timer reqTimeListenerTimer;
 
+	public static int reqCount = 0;
+	public static int sucCount = 0;
+	public static int failCount = 0;
+	public static int adfreqCount = 0;
+	public static int adfsucCount = 0;
+	public static int adffailCount = 0;
+
 	public AdViewAdapter() {
 
 	}
@@ -37,8 +44,8 @@ public abstract class AdViewAdapter {
 		// new codes of new logic find adapter.
 		Class<? extends AdViewAdapter> adapterClass = AdViewAdRegistry
 				.getInstance().adapterClassForAdType(ration.type);
-//		adapterClass=AdFillAdapter.class;
-//		adViewLayout.isadFill=true;
+		// adapterClass=AdFillAdapter.class;
+		// adViewLayout.isadFill=true;
 		if (null != adapterClass) {
 			return getNetworkAdapter(adapterClass, adViewLayout, ration);
 		}
@@ -285,7 +292,9 @@ public abstract class AdViewAdapter {
 		if (adapter != null) {
 			AdViewUtil.logInfo("Valid adapter, calling handle()");
 			adapter.handle();
-			AdViewReqManager.getInstance(adViewLayout.activityReference.get()).storeInfo(adViewLayout, ration.type, AdViewUtil.COUNTREQUEST);
+			AdViewReqManager.getInstance(adViewLayout.activityReference.get())
+					.storeInfo(adViewLayout, ration.type,
+							AdViewUtil.COUNTREQUEST);
 		} else {
 			adViewLayout.adViewManager.resetRollover();
 			adViewLayout.rotateThreadedPri(0);
@@ -326,15 +335,19 @@ public abstract class AdViewAdapter {
 			this.reqTimeListenerTimer = null;
 		}
 	}
-	public void onSuccessed(AdViewLayout adViewLayout,Ration ration){
-		AdViewReqManager.getInstance(adViewLayout.activityReference.get()).storeInfo(adViewLayout, ration.type, AdViewUtil.COUNTSUCCESS);
-		
+
+	public void onSuccessed(AdViewLayout adViewLayout, Ration ration) {
+		AdViewReqManager.getInstance(adViewLayout.activityReference.get())
+				.storeInfo(adViewLayout, ration.type, AdViewUtil.COUNTSUCCESS);
 	}
-	
-	public void onFailed(AdViewLayout adViewLayout,Ration ration){
-		AdViewReqManager.getInstance(adViewLayout.activityReference.get()).storeInfo(adViewLayout, ration.type, AdViewUtil.COUNTFAIL);
-			adViewLayout.rotateThreadedPri(1);
+
+	public void onFailed(AdViewLayout adViewLayout, Ration ration) {
+		AdViewReqManager.getInstance(adViewLayout.activityReference.get())
+				.storeInfo(adViewLayout, ration.type, AdViewUtil.COUNTFAIL);
+		adViewLayout.listStatistics(ration.name, AdViewLayout.FAIL, 1);
+		adViewLayout.rotateThreadedPri(1);
 	}
+
 	public void requestTimeOut() {
 	}
 

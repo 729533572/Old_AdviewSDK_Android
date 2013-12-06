@@ -16,10 +16,6 @@ import com.kyview.AdViewTargeting;
 import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
-//import com.kyview.AdViewLayout.ViewAdRunnable;
-//import com.baidu.mobads.AdType;
-//import com.kyview.obj.Extra;
-//import android.graphics.Color;
 
 public class AdBaiduAdapter extends AdViewAdapter implements AdViewListener {
 	private boolean isFailed=false;

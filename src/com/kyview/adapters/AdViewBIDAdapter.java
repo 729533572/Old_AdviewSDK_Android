@@ -11,18 +11,18 @@ import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
 
-public class AdFillAdapter extends AdViewAdapter implements OnAdListener {
+public class AdViewBIDAdapter extends AdViewAdapter implements OnAdListener {
 
 	private AdViewBIDView adFillView = null;
 
 	private static int networkType() {
-		return AdViewUtil.NETWORK_TYPE_ADFILL;
+		return AdViewUtil.NETWORK_TYPE_ADBID;
 	}
 
 	public static void load(AdViewAdRegistry registry) {
 		try {
 			if (Class.forName("com.kuaiyou.adfill.ad.AdViewBIDView") != null) {
-				registry.registerClass(networkType(), AdFillAdapter.class);
+				registry.registerClass(networkType(), AdViewBIDAdapter.class);
 			}
 		} catch (ClassNotFoundException e) {
 		}
@@ -30,7 +30,7 @@ public class AdFillAdapter extends AdViewAdapter implements OnAdListener {
 
 	@Override
 	public void handle() {
-		AdViewUtil.logInfo("Into AdFill");
+		AdViewUtil.logInfo("Into AdBid");
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if (adViewLayout == null)
 			return;
@@ -44,6 +44,10 @@ public class AdFillAdapter extends AdViewAdapter implements OnAdListener {
 
 	}
 
+//	@Override
+//	public void click(int isMissTouch) {
+//		this.onAdClicked(adFillView, isMissTouch);
+//	}
 
 	@Override
 	public void initAdapter(AdViewLayout adViewLayout, Ration ration) {
@@ -53,14 +57,14 @@ public class AdFillAdapter extends AdViewAdapter implements OnAdListener {
 
 	@Override
 	public void onReceivedAd(KyAdBaseView view) {
-		AdViewUtil.logInfo("AdFill success");
+		AdViewUtil.logInfo("AdBid success");
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if (adViewLayout == null)
 			return;
 		view.setAnimRotated();
 		view.startLayoutAnimation();
-		AdViewUtil.adfill_count += 1;
 		super.onSuccessed(adViewLayout, ration);
+
 		adViewLayout.adViewManager.resetRollover();
 		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, view));
 		adViewLayout.rotateThreadedDelayed();
@@ -69,7 +73,7 @@ public class AdFillAdapter extends AdViewAdapter implements OnAdListener {
 
 	@Override
 	public void onConnectFailed(KyAdBaseView view, String msg) {
-		AdViewUtil.logInfo("AdFill failure, msg=" + msg);
+		AdViewUtil.logInfo("AdBid failure, msg=" + msg);
 		view.setBannerAdListener(null);
 
 		AdViewLayout adViewLayout = adViewLayoutReference.get();

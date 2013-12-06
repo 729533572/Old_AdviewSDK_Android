@@ -8,15 +8,16 @@ import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
-import com.mobisage.android.IMobiSageAdViewListener;
 import com.mobisage.android.MobiSageAdBanner;
+import com.mobisage.android.MobiSageAdBannerListener;
 import com.mobisage.android.MobiSageAnimeType;
 import com.mobisage.android.MobiSageEnviroment;
+import com.mobisage.android.MobiSageManager;
 
 //import com.kyview.AdViewLayout.ViewAdRunnable;
 
 public class MobiSageAdapter extends AdViewAdapter implements
-		IMobiSageAdViewListener {
+		MobiSageAdBannerListener {
 	private MobiSageAdBanner adv;
 
 	private static int networkType() {
@@ -25,7 +26,7 @@ public class MobiSageAdapter extends AdViewAdapter implements
 
 	public static void load(AdViewAdRegistry registry) {
 		try {
-			if (Class.forName("com.mobisage.android.IMobiSageAdViewListener") != null) {
+			if (Class.forName("com.mobisage.android.MobiSageAdBannerListener") != null) {
 				registry.registerClass(networkType(), MobiSageAdapter.class);
 			}
 		} catch (ClassNotFoundException e) {
@@ -55,10 +56,12 @@ public class MobiSageAdapter extends AdViewAdapter implements
 		if (activity == null) {
 			return;
 		}
-		adv = new MobiSageAdBanner(activity, ration.key, null, null);// MobiSageAdSize.Size_540X80
+		MobiSageManager.getInstance().setPublisherID(ration.key);
+		adv = new MobiSageAdBanner(activity);// MobiSageAdSize.Size_540X80
+
 		adv.setAdRefreshInterval(MobiSageEnviroment.AdRefreshInterval.Ad_No_Refresh);// Ad_Refresh_15//Ad_No_Refresh
 		adv.setAnimeType(MobiSageAnimeType.Anime_LeftToRight);
-		adv.setMobiSageAdViewListener(this);
+		adv.setMobiSageAdBannerListener(this);
 		adViewLayout.activeRation = adViewLayout.nextRation;
 		adViewLayout.removeAllViews();
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
@@ -69,51 +72,7 @@ public class MobiSageAdapter extends AdViewAdapter implements
 	}
 
 	public void onMobiSageAdViewShow(Object adView) {
-		AdViewUtil.logInfo("onMobiSageAdViewShow");
-		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if (adViewLayout == null) {
-			return;
-		}
-		super.onSuccessed(adViewLayout, ration);
-		adv.setMobiSageAdViewListener(null);
-		adViewLayout.adViewManager.resetRollover();
-		adViewLayout.rotateThreadedDelayed();
-		adViewLayout.reportImpression();
-	}
 
-	public void onMobiSageAdViewUpdate(Object adView) {
-		AdViewUtil.logInfo("onMobiSageAdViewUpdate");
-	}
-
-	public void onMobiSageAdViewHide(Object adView) {
-		AdViewUtil.logInfo("onMobiSageAdViewHide");
-	}
-
-	public void onMobiSageAdViewError(Object adView) {
-		AdViewUtil.logInfo("onMobiSageAdViewError");
-
-		adv.setMobiSageAdViewListener(null);
-
-		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if (adViewLayout == null)
-			return;
-		super.onFailed(adViewLayout, ration);
-		//adViewLayout.rotateThreadedPri(1);
-	}
-
-	@Override
-	public void onMobiSageAdViewClick(Object arg0) {
-		AdViewUtil.logInfo("onMobiSageAdViewClick");
-		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if (adViewLayout == null) {
-			return;
-		}
-		adViewLayout.reportClick();
-	}
-
-	@Override
-	public void onMobiSageAdViewClose(Object arg0) {
-		
 	}
 
 	@Override
@@ -124,6 +83,69 @@ public class MobiSageAdapter extends AdViewAdapter implements
 			adv.destoryAdView();
 			adv = null;
 		}
+	}
+
+	@Override
+	public void onMobiSageBannerClick(MobiSageAdBanner arg0) {
+		// TODO Auto-generated method stub
+		AdViewUtil.logInfo("onMobiSageAdViewClick");
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if (adViewLayout == null) {
+			return;
+		}
+		adViewLayout.reportClick();
+	}
+
+	@Override
+	public void onMobiSageBannerClose(MobiSageAdBanner arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onMobiSageBannerError(MobiSageAdBanner arg0) {
+		// TODO Auto-generated method stub
+		AdViewUtil.logInfo("onMobiSageAdViewError");
+
+		adv.setMobiSageAdBannerListener(null);
+
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if (adViewLayout == null)
+			return;
+		super.onFailed(adViewLayout, ration);
+	}
+
+	@Override
+	public void onMobiSageBannerHide(MobiSageAdBanner arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onMobiSageBannerHideWindow(MobiSageAdBanner arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onMobiSageBannerPopupWindow(MobiSageAdBanner arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onMobiSageBannerShow(MobiSageAdBanner arg0) {
+		// TODO Auto-generated method stub
+		AdViewUtil.logInfo("onMobiSageAdViewShow");
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if (adViewLayout == null) {
+			return;
+		}
+		super.onSuccessed(adViewLayout, ration);
+		adv.setMobiSageAdBannerListener(null);
+		adViewLayout.adViewManager.resetRollover();
+		adViewLayout.rotateThreadedDelayed();
+		adViewLayout.reportImpression();
 	}
 
 }

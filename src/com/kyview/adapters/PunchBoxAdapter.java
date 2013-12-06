@@ -36,15 +36,15 @@ public class PunchBoxAdapter extends AdViewAdapter implements AdListener {
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if (null == adViewLayout)
 			return;
-		PunchBox mPb = PunchBox.getInstance();
+		PunchBox mPb = PunchBox.getInstance(context);
 		FixedAdRequest request = new FixedAdRequest(context);
 		mFixedadView = new FixedAdView(context);
 		
 
 		if (AdViewTargeting.getRunMode() == RunMode.TEST)
-			mPb.init(context, "22222222-2222-2222-2222-222222222222", "");
+			mPb.setAppID(context, "22222222-2222-2222-2222-222222222222");
 		else
-			mPb.init(context, ration.key, "");
+			mPb.setAppID(context, ration.key);
 
 		mPb.setServerMode(false);
 
@@ -84,15 +84,15 @@ public class PunchBoxAdapter extends AdViewAdapter implements AdListener {
 		AdViewUtil.logInfo("onPresentScreen");
 	}
 
-	@Override
-	public void onTouched() {
-		AdViewUtil.logInfo("onAdClick");
-		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if (adViewLayout == null) {
-			return;
-		}
-		adViewLayout.reportClick();
-	}
+//	@Override
+//	public void onTouched() {
+//		AdViewUtil.logInfo("onAdClick");
+//		AdViewLayout adViewLayout = adViewLayoutReference.get();
+//		if (adViewLayout == null) {
+//			return;
+//		}
+//		adViewLayout.reportClick();
+//	}
 
 	@Override
 	public void onReceiveAd() {

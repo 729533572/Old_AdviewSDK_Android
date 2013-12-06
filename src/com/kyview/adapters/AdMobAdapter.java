@@ -99,7 +99,7 @@ public class AdMobAdapter extends AdViewAdapter implements AdListener {
 
 	@Override
 	public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
-		AdViewUtil.logInfo("AdMob fail");
+		AdViewUtil.logInfo("AdMob fail "+arg1);
 		arg0.setAdListener(null);
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if (adViewLayout == null) {

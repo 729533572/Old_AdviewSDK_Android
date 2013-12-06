@@ -2,9 +2,9 @@ package com.kyview.adapters;
 
 import android.view.View;
 
-import com.adchina.android.ads.AdBannerListener;
 import com.adchina.android.ads.AdManager;
-import com.adchina.android.ads.views.AdView;
+import com.adchina.android.ads.api.AdBannerListener;
+import com.adchina.android.ads.api.AdView;
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
 import com.kyview.AdViewLayout.ViewAdRunnable;
@@ -19,11 +19,11 @@ public class AdChinaAdapter extends AdViewAdapter implements AdBannerListener {
 
 	public static void load(AdViewAdRegistry registry) {
 		try {
-			if (Class.forName("com.adchina.android.ads.views.AdView") != null) {
+			if (Class.forName("com.adchina.android.ads.api.AdBannerListener") != null) {
 				registry.registerClass(networkType(), AdChinaAdapter.class);
 			}
 		} catch (ClassNotFoundException e) {
-		}
+		}	
 	}
 
 	public AdChinaAdapter() {
@@ -44,12 +44,12 @@ public class AdChinaAdapter extends AdViewAdapter implements AdBannerListener {
 			return;
 		}
 
-		AdManager.setRefershinterval(-1);
+
 		AdManager.setRelateScreenRotate(adViewLayout.getContext(), true);
 		AdView mAdView = new AdView(adViewLayout.getContext(), ration.key,
 				true, false);
 		mAdView.setAdBannerListener(this);
-
+		mAdView.setAdRefreshTime(-1);
 		mAdView.setVisibility(View.VISIBLE);
 		mAdView.start();
 
@@ -77,28 +77,16 @@ public class AdChinaAdapter extends AdViewAdapter implements AdBannerListener {
 		adViewLayout.rotateThreadedDelayed();
 	}
 
-	@Override
-	public boolean OnRecvSms(AdView arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 	@Override
 	public void onClickBanner(AdView arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onFailedToRefreshAd(AdView arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onRefreshAd(AdView arg0) {
-		// TODO Auto-generated method stub
-
+		AdViewUtil.logInfo("onAdClick");
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if(adViewLayout == null) {
+			return;
+		}
+		adViewLayout.reportClick();
+		
 	}
 
 }

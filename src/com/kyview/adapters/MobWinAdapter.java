@@ -11,9 +11,6 @@ import com.tencent.exmobwin.MobWINManager;
 import com.tencent.exmobwin.Type;
 import com.tencent.exmobwin.banner.AdListener;
 import com.tencent.exmobwin.banner.TAdView;
-//import android.graphics.Color;
-//import com.kyview.AdViewLayout.ViewAdRunnable;
-//import com.kyview.obj.Extra;
 
 public class MobWinAdapter extends AdViewAdapter implements AdListener {
 	private TAdView adView;

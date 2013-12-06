@@ -16,6 +16,9 @@ import com.kyview.util.AdViewUtil;
 
 public class AdwoAdapter extends AdViewAdapter implements AdListener {
 
+	byte chId = 2;
+	byte mkId = 3;
+
 	private static int networkType() {
 		return AdViewUtil.NETWORK_TYPE_ADWO;
 	}
@@ -47,6 +50,9 @@ public class AdwoAdapter extends AdViewAdapter implements AdListener {
 		if (activity == null)
 			return;
 		AdwoAdView adView = null;
+		AdwoAdView.setBannerMatchScreenWidth(true);
+		AdwoAdView.setMarketId(mkId);
+		AdwoAdView.setAggChannelId(chId);
 		if (AdViewTargeting.getRunMode() == RunMode.TEST)
 			adView = new AdwoAdView((Activity) adViewLayout.getContext(),
 					ration.key, true, 0);
@@ -54,8 +60,7 @@ public class AdwoAdapter extends AdViewAdapter implements AdListener {
 			adView = new AdwoAdView((Activity) adViewLayout.getContext(),
 					ration.key, false, 0);
 
-		byte id = 2;
-		AdwoAdView.setAggChannelId(id);
+
 		adView.setListener(this);
 		adViewLayout.AddSubView(adView);
 

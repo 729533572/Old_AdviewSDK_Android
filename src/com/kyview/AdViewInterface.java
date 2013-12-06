@@ -1,5 +1,6 @@
 package com.kyview;
 
+
 public interface AdViewInterface {
 	/**
 	 * 当广告被点击时调用该函数
@@ -23,4 +24,5 @@ public interface AdViewInterface {
 	 */
 	
 	public void onClosedAd();
-}
+	
+	}

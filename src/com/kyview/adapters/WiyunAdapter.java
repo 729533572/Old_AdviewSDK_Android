@@ -12,7 +12,6 @@ import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
 import com.wiyun.ad.AdView;
 import com.wiyun.ad.AdView.AdListener;
-//import com.kyview.AdViewLayout.ViewAdRunnable;
 
 
 public class WiyunAdapter extends AdViewAdapter implements AdListener{
