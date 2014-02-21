@@ -9,23 +9,23 @@
 平台版本（AdView和各家广告平台的SDK均在libs目录下）：
 	库名				广告平台					版本
 
-AdViewSDK_Android.jar			AdView    					2.0.4
-AdViewSDK_BID.jar			AdView互推&补余&竞价				2.0.4
+AdViewSDK_Android.jar			AdView    					2.0.7
+AdViewSDK_BID.jar			AdView互推&补余&竞价				2.0.7
 adlantis.jar				Adlantis					1.3.7
-adchina_android_sdk.jar			易传媒						3.0.1
+adchina_android_sdk.jar			易传媒						3.0.2
 adlib_android.jar			哇棒						2.3.0
 adOn-3.2.8.jar				Vpon						3.2.8
 adtouch-embed-sdk-1.1.0.jar		AdTouch						1.1.0
 Adwo_Android_SDK3.1.jar			AdWo						4.0
 ad-fractalist-sdk-android.jar		飞云						2.0
 airAD_sdk.jar				AirAD						1.3.3
-Baidu_MobAds_SDK_Agg_3.2.jar		百度						3.4.1
+Baidu_MobAds_SDK_Agg_3.2.jar		百度						3.4.3
 AppMediaAdAndroidSdk-1.1.0.jar		AppMedia					1.1.0
-domob_android_sdk.jar			多盟						4.0.3
+domob_android_sdk.jar			多盟						4.1.0
 GoogleAdMobAdsSdk-6.4.1.jar		AdMob						6.4.1
 gssdk_2.0.2.jar				GreyStripe					2.0.2
 IZPView.jar				亿赞普						1.0.3
-immobSDK.jar				力美						2.6.0
+immobSDK.jar				力美						2.7.0
 
 InMobiAdNetwork_3.7.0.jar
 InMobiCommons_3.7.0.jar			InMobi						4.0.2
@@ -55,7 +55,7 @@ yunyun-ads-sdk-4-Adview-V3.0.jar	云云						3.1.0
 aduu-sdk.jar				aduu						3.3.4
 PunchBoxSDK_Android.jar			触控						3.2.3
 zhidian_ad_sdk.jar			指点						4.1.1
-
+gdt_mob_release_v3.0.414.jar		广点通						3.0.414
 
 平台选择
 ====================================

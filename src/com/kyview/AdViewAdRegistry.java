@@ -19,6 +19,7 @@ import com.kyview.adapters.DomobAdapter;
 import com.kyview.adapters.DoubleClickAdapter;
 import com.kyview.adapters.EventAdapter;
 import com.kyview.adapters.FractalAdapter;
+import com.kyview.adapters.GdtAdapter;
 import com.kyview.adapters.GreystripeAdapter;
 import com.kyview.adapters.InmobiAdapter;
 import com.kyview.adapters.IzpAdapter;
@@ -80,6 +81,7 @@ public class AdViewAdRegistry {
 		try {DomobAdapter.load(this);}catch(Error e){}
 		try {DoubleClickAdapter.load(this);}catch(Error e){}
 		try {EventAdapter.load(this);}catch(Error e){}
+		try {GdtAdapter.load(this);}catch(Error e){}
 		try {FractalAdapter.load(this);}catch(Error e){}
 		try {GreystripeAdapter.load(this);}catch(Error e){}
 		try {InmobiAdapter.load(this);}catch(Error e){}

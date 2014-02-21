@@ -8,8 +8,8 @@ import cn.smartmad.ads.android.SMRequestEventCode;
 
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
-import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.AdViewTargeting;
+import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;

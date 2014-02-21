@@ -1,12 +1,12 @@
 package com.kyview.adapters;
 
-import com.kuaiyou.adfill.ad.AdViewBIDView;
-import com.kuaiyou.adfill.ad.KyAdBaseView;
-import com.kuaiyou.adfill.interfaces.OnAdListener;
+import com.kuaiyou.adbid.AdViewBIDView;
+import com.kuaiyou.KyAdBaseView;
+import com.kuaiyou.interfaces.OnAdListener;
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
-import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.AdViewTargeting;
+import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
@@ -21,7 +21,7 @@ public class AdViewBIDAdapter extends AdViewAdapter implements OnAdListener {
 
 	public static void load(AdViewAdRegistry registry) {
 		try {
-			if (Class.forName("com.kuaiyou.adfill.ad.AdViewBIDView") != null) {
+			if (Class.forName("com.kuaiyou.adbid.AdViewBIDView") != null) {
 				registry.registerClass(networkType(), AdViewBIDAdapter.class);
 			}
 		} catch (ClassNotFoundException e) {
@@ -66,7 +66,8 @@ public class AdViewBIDAdapter extends AdViewAdapter implements OnAdListener {
 		super.onSuccessed(adViewLayout, ration);
 
 		adViewLayout.adViewManager.resetRollover();
-		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, view));
+//		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, view));
+		adViewLayout.handler.postDelayed(new ViewAdRunnable(adViewLayout, view), 400);
 		adViewLayout.rotateThreadedDelayed();
 		// adViewLayout.AddSubView(view);
 	}
@@ -80,7 +81,8 @@ public class AdViewBIDAdapter extends AdViewAdapter implements OnAdListener {
 		if (adViewLayout == null) {
 			return;
 		}
-		adViewLayout.rotateAd();
+//		adViewLayout.rotateAd();
+		super.onFailed(adViewLayout, ration);
 	}
 
 	@Override
@@ -97,6 +99,12 @@ public class AdViewBIDAdapter extends AdViewAdapter implements OnAdListener {
 	@Override
 	public void clean() {
 		super.clean();
+	}
+
+	@Override
+	public void onAdClose(KyAdBaseView view) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

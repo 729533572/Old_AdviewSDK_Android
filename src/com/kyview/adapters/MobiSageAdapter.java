@@ -1,11 +1,10 @@
 package com.kyview.adapters;
 
 import android.app.Activity;
-import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
+import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
 import com.mobisage.android.MobiSageAdBanner;
@@ -62,13 +61,14 @@ public class MobiSageAdapter extends AdViewAdapter implements
 		adv.setAdRefreshInterval(MobiSageEnviroment.AdRefreshInterval.Ad_No_Refresh);// Ad_Refresh_15//Ad_No_Refresh
 		adv.setAnimeType(MobiSageAnimeType.Anime_LeftToRight);
 		adv.setMobiSageAdBannerListener(this);
-		adViewLayout.activeRation = adViewLayout.nextRation;
-		adViewLayout.removeAllViews();
-		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-		adViewLayout.addView(adv, layoutParams);
-		adViewLayout.addCloseButton(adViewLayout);
+		// adViewLayout.activeRation = adViewLayout.nextRation;
+		// adViewLayout.removeAllViews();
+		// RelativeLayout.LayoutParams layoutParams = new
+		// RelativeLayout.LayoutParams(
+		// LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		// layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+		// adViewLayout.addView(adv, layoutParams);
+		// adViewLayout.addCloseButton(adViewLayout);
 	}
 
 	public void onMobiSageAdViewShow(Object adView) {
@@ -142,10 +142,15 @@ public class MobiSageAdapter extends AdViewAdapter implements
 			return;
 		}
 		super.onSuccessed(adViewLayout, ration);
-		adv.setMobiSageAdBannerListener(null);
+
+		arg0.setMobiSageAdBannerListener(null);
 		adViewLayout.adViewManager.resetRollover();
+		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0));
 		adViewLayout.rotateThreadedDelayed();
-		adViewLayout.reportImpression();
+
+		// adViewLayout.adViewManager.resetRollover();
+		// adViewLayout.rotateThreadedDelayed();
+		// adViewLayout.reportImpression();
 	}
 
 }

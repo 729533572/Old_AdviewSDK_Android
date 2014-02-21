@@ -12,8 +12,8 @@ import com.google.ads.AdSize;
 import com.google.ads.AdView;
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
-import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.AdViewTargeting;
+import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
 
@@ -70,7 +70,7 @@ public class AdMobAdapter extends AdViewAdapter implements AdListener {
 		if (activity == null) {
 			return;
 		}
-		adView = new AdView(activity, AdSize.SMART_BANNER, ration.key);
+		adView = new AdView(activity, AdSize.BANNER, ration.key);
 		adView.setAdListener(this);
 
 		adView.loadAd(requestForAdWhirlLayout(adViewLayout));
@@ -99,14 +99,14 @@ public class AdMobAdapter extends AdViewAdapter implements AdListener {
 
 	@Override
 	public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
-		AdViewUtil.logInfo("AdMob fail "+arg1);
+		AdViewUtil.logInfo("AdMob fail " + arg1);
 		arg0.setAdListener(null);
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if (adViewLayout == null) {
 			return;
 		}
 		super.onFailed(adViewLayout, ration);
-		//adViewLayout.rotateThreadedPri(1);
+		// adViewLayout.rotateThreadedPri(1);
 	}
 
 	@Override
@@ -148,16 +148,18 @@ public class AdMobAdapter extends AdViewAdapter implements AdListener {
 
 	@Override
 	public void clean() {
-		// TODO Auto-generated method stub
 		super.clean();
-		
-		if(adView!=null) {
-			adView.setAdListener(null);
-			adView.destroy();
+		try {
+			if (adView != null) {
+				adView.setAdListener(null);
+				adView.destroy();
+			}
+			adView = null;
+			AdViewUtil.logInfo("release AdMob");
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
-		
-		adView=null;
-		AdViewUtil.logInfo("release AdMob");
+
 	}
 
 	/*******************************************************************/

@@ -14,25 +14,26 @@ import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
 
-public class LmMobAdapter extends AdViewAdapter implements LMAdListener{
+public class LmMobAdapter extends AdViewAdapter implements LMAdListener {
 
 	private ImmobView adView;
-	
+
 	private static int networkType() {
 		return AdViewUtil.NETWORK_TYPE_LMMOB;
 	}
-	
+
 	public static void load(AdViewAdRegistry registry) {
 		try {
-			if(Class.forName("cn.immob.sdk.ImmobView") != null) {
+			if (Class.forName("cn.immob.sdk.ImmobView") != null) {
 				registry.registerClass(networkType(), LmMobAdapter.class);
 			}
-		} catch (ClassNotFoundException e) {}
+		} catch (ClassNotFoundException e) {
+		}
 	}
 
 	public LmMobAdapter() {
 	}
-	
+
 	@Override
 	public void initAdapter(AdViewLayout adViewLayout, Ration ration) {
 		// TODO Auto-generated constructor stub
@@ -41,76 +42,77 @@ public class LmMobAdapter extends AdViewAdapter implements LMAdListener{
 	@Override
 	public void handle() {
 		// TODO Auto-generated method stub
-		
+
 		AdViewUtil.logInfo("Into LmMob");
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if(adViewLayout == null) {
-			return;
-	 	}
-		
-		Activity activity = adViewLayout.activityReference.get();
-		if(activity == null) {
+		if (adViewLayout == null) {
 			return;
 		}
-		
-		 Hashtable<String, String> ht = new Hashtable<String, String>();
-		 ht.put("channelID", AdViewUtil.ADVIEW);
 
-		 if(AdViewTargeting.getRunMode()==RunMode.TEST) 
-			adView = new ImmobView(activity, "dc483fd9e819fbc9ecc06594ddc3d96a", ht);
-		 else
-		 	adView = new ImmobView(activity, ration.key, ht);
+		Activity activity = adViewLayout.activityReference.get();
+		if (activity == null) {
+			return;
+		}
+
+		Hashtable<String, String> ht = new Hashtable<String, String>();
+		ht.put("channelID", AdViewUtil.ADVIEW);
+
+		if (AdViewTargeting.getRunMode() == RunMode.TEST)
+			adView = new ImmobView(activity,
+					"dc483fd9e819fbc9ecc06594ddc3d96a", ht);
+		else
+			adView = new ImmobView(activity, ration.key, ht);
 		adView.setAdListener(this);
 
-		adViewLayout.activeRation = adViewLayout.nextRation;
-		adViewLayout.removeAllViews();
-		RelativeLayout.LayoutParams layoutParams;
-		layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-		layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-		adViewLayout.addView(adView, layoutParams);
-		adViewLayout.addCloseButton(adViewLayout);
+		 adViewLayout.activeRation = adViewLayout.nextRation;
+		 adViewLayout.removeAllViews();
+		 RelativeLayout.LayoutParams layoutParams;
+		 layoutParams = new
+		 RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+		 RelativeLayout.LayoutParams.WRAP_CONTENT);
+		 layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+		 adViewLayout.addView(adView, layoutParams);
+		 adViewLayout.addCloseButton(adViewLayout);
 	}
 
 	@Override
 	public void onAdReceived(ImmobView arg0) {
 		// TODO Auto-generated method stub
 		AdViewUtil.logInfo("LmMob success");
-		if(adView!=null)
-		{
-			adView.display();
+		if (arg0 != null) {
+			arg0.display();
 		}
 
-		adView.setAdListener(null);
-		
+		arg0.setAdListener(null);
+
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if(adViewLayout == null) {
+		if (adViewLayout == null) {
 			return;
 		}
 		super.onSuccessed(adViewLayout, ration);
 		adViewLayout.adViewManager.resetRollover();
-		//adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView));
+//		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0));
 		adViewLayout.rotateThreadedDelayed();
-
 		adViewLayout.reportImpression();
-		
+
 	}
 
 	@Override
 	public void onFailedToReceiveAd(ImmobView arg0, int arg1) {
 		// TODO Auto-generated method stub
 
-		AdViewUtil.logInfo("LmMob failure, arg1="+arg1);
+		AdViewUtil.logInfo("LmMob failure, arg1=" + arg1);
 		adView.setAdListener(null);
 
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if(adViewLayout == null) {
+		if (adViewLayout == null) {
 			return;
 		}
 		super.onFailed(adViewLayout, ration);
-		//adViewLayout.rotateThreadedPri(1);
-		
+		// adViewLayout.rotateThreadedPri(1);
+
 	}
-	
+
 	@Override
 	public void onDismissScreen(ImmobView arg0) {
 		// TODO Auto-generated method stub
@@ -129,6 +131,4 @@ public class LmMobAdapter extends AdViewAdapter implements LMAdListener{
 		AdViewUtil.logInfo("LmMob onPresentScreen");
 	}
 
-
-	
 }

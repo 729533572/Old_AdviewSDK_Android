@@ -11,7 +11,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,8 +32,6 @@ import android.view.WindowManager;
 
 import com.kyview.AdViewTargeting;
 import com.kyview.AdViewTargeting.RunMode;
-import com.kyview.statistics.LogInterface;
-import com.kyview.statistics.StatisticsBean;
 
 public class AdViewUtil {
 	public static final boolean TEST_SERVER = false; // false
@@ -63,10 +60,7 @@ public class AdViewUtil {
 
 	public static String TESTSERVER_HOST = "test2012.adview.cn";// 124.207.233.119";
 
-	public static List<StatisticsBean> statisticsList = null;
-
 	public static StringBuilder sb = null;
-	private static LogInterface logInterface = null;
 
 	// public static final String urlConfig =
 	// "http://config.adview.cn/agent/agent1_android.php?appid=%s&appver=%d&client=0&simulator=%d&location=%s&time=%d&sdkver=%s";
@@ -79,11 +73,11 @@ public class AdViewUtil {
 	// Don't change anything below this line
 	/***********************************************/
 
-	public static final int VERSION = 204;
+	public static final int VERSION = 207;
 
-	public static final String ADVIEW = "AdView SDK v2.0.4";
-	public static final String ADVIEW4YUNYUN = "FRADVIEW_2.0.4";
-	public static final String ADVIEW_VER = "2.0.4";
+	public static final String ADVIEW = "AdView SDK v2.0.7";
+	public static final String ADVIEW4YUNYUN = "FRADVIEW_2.0.7";
+	public static final String ADVIEW_VER = "2.0.7";
 
 	// Could be an enum, but this gives us a slight performance improvement
 	// abroad
@@ -132,6 +126,8 @@ public class AdViewUtil {
 	public static final int NETWORK_TYPE_PUNCHBOX = 57;
 
 	public static final int NETWORK_TYPE_ZHIDIAN = 58;
+
+	public static final int NETWORK_TYPE_GDT = 59;
 
 	public static final int NETWORK_TYPE_CUSTOMIZE = 999;
 
@@ -329,46 +325,22 @@ public class AdViewUtil {
 	public static void logWarn(String info, Throwable r) {
 		if (AdViewTargeting.getRunMode() == RunMode.TEST)
 			Log.w(AdViewUtil.ADVIEW, info, r);
-		if (null == sb)
-			sb = new StringBuilder();
-		sb.append(r.toString() + "\n");
-		if (null != logInterface)
-			logInterface.onLogChange(sb);
 	}
 
 	public static void logDebug(String info) {
 		if (AdViewTargeting.getRunMode() == RunMode.TEST)
 			Log.d(AdViewUtil.ADVIEW, info);
-		if (null == sb)
-			sb = new StringBuilder();
-		sb.append(info + "\n");
-		if (null != logInterface)
-			logInterface.onLogChange(sb);
 
 	}
 
 	public static void logError(String info, Throwable r) {
 		if (AdViewTargeting.getRunMode() == RunMode.TEST)
 			Log.e(AdViewUtil.ADVIEW, info, r);
-		if (null == sb)
-			sb = new StringBuilder();
-		sb.append(r.toString() + "\n");
-		if (null != logInterface)
-			logInterface.onLogChange(sb);
 	}
 
 	public static void logInfo(String info) {
 		if (AdViewTargeting.getRunMode() == RunMode.TEST)
 			Log.i(AdViewUtil.ADVIEW, info);
-		if (null == sb)
-			sb = new StringBuilder();
-		sb.append(info + "\n");
-		if (null != logInterface)
-			logInterface.onLogChange(sb);
-	}
-
-	public static void setLogInterface(LogInterface logInterface) {
-		AdViewUtil.logInterface = logInterface;
 	}
 
 	public static void writeLogtoFile(String logName, boolean isPrintTime,

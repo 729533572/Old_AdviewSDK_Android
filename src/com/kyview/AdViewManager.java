@@ -34,7 +34,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager;
 
-import com.kuaiyou.adfill.util.AdViewUtils;
+import com.kuaiyou.util.AdViewUtils;
 import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.AdViewTargeting.UpdateMode;
 import com.kyview.adapters.AdViewAdapter;
@@ -179,7 +179,7 @@ public class AdViewManager {
 	public synchronized void resetRollover() {
 		Class<?> clazz = null;
 		try {
-			clazz = Class.forName("com.kuaiyou.adfill.util.AdViewUtils");
+			clazz = Class.forName("com.kuaiyou.util.AdViewUtils");
 			if (null != clazz && AdViewLayout.isadFill)
 				AdViewUtils.resetList(AdViewUtil.adfill_count,
 						AdViewUtil.common_count, AdViewUtil.adfill_precent);
@@ -252,7 +252,8 @@ public class AdViewManager {
 					contentStr = convertStreamToString(inputStream);
 				}
 			}
-			AdViewUtil.logInfo("httpCode : "+httpResponse.getStatusLine().getStatusCode());
+			AdViewUtil.logInfo("httpCode : "
+					+ httpResponse.getStatusLine().getStatusCode());
 		} catch (ClientProtocolException e) {
 			AdViewUtil.logError("", e);
 		} catch (IOException e) {
@@ -283,7 +284,7 @@ public class AdViewManager {
 				AdViewLayout.appVersion, mSimulator, mLocation,
 				AdViewUtil.currentSecond(), AdViewUtil.VERSION);
 		jsonString = performGetContent(url);
-		 AdViewUtil.logInfo(jsonString);
+		AdViewUtil.logInfo(jsonString);
 		if (null != jsonString && jsonString.length() > 0) {
 			if (checkConfigurationString(jsonString) == true) {
 				mLastConfigTime = System.currentTimeMillis();
@@ -295,7 +296,7 @@ public class AdViewManager {
 					editor.putLong(AdViewUtil.PREFS_STRING_TIMESTAMP,
 							System.currentTimeMillis());
 					editor.commit();
-			
+
 				}
 				bGotNetConfig = true;
 			} else {
@@ -506,8 +507,8 @@ public class AdViewManager {
 								jsonRation.getInt("type"));
 
 				if (null == adapterClass) {
-						AdViewUtil.logInfo("don't include ad="
-								+ jsonRation.getInt("type"));
+					AdViewUtil.logInfo("don't include ad="
+							+ jsonRation.getInt("type"));
 					continue;
 				}
 
@@ -555,7 +556,7 @@ public class AdViewManager {
 		if (AdViewLayout.isadFill) {
 			Class<?> clazz = null;
 			try {
-				clazz = Class.forName("com.kuaiyou.adfill.util.AdViewUtils");
+				clazz = Class.forName("com.kuaiyou.util.AdViewUtils");
 				if (null != clazz)
 					if (this.rationsList.isEmpty()) {
 						this.rationsList.add(0, afRation());

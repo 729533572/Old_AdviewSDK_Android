@@ -4,8 +4,8 @@ import android.graphics.Color;
 
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
-import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.AdViewTargeting;
+import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.obj.Extra;
 import com.kyview.obj.Ration;

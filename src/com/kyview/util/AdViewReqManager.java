@@ -6,10 +6,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.kyview.AdViewLayout;
+
 import android.content.Context;
 import android.os.Handler;
 
-import com.kyview.AdViewLayout;
 
 public class AdViewReqManager implements FetchListener {
 

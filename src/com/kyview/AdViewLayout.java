@@ -3,9 +3,6 @@ package com.kyview;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -43,8 +40,6 @@ import com.kyview.AdViewTargeting.SwitcherMode;
 import com.kyview.adapters.AdViewAdapter;
 import com.kyview.obj.Extra;
 import com.kyview.obj.Ration;
-import com.kyview.statistics.StatisticsBean;
-import com.kyview.statistics.StatisticsInterface;
 import com.kyview.util.AdViewReqManager;
 import com.kyview.util.AdViewUtil;
 import com.kyview.util.CrashHandler;
@@ -95,7 +90,6 @@ public class AdViewLayout extends RelativeLayout {
 	public double mDensity = 0D;
 
 	public AdViewInterface adViewInterface;
-	public StatisticsInterface statisticsInterface;
 
 	public AdViewManager adViewManager;
 
@@ -209,7 +203,7 @@ public class AdViewLayout extends RelativeLayout {
 		resoursePath = "/com/kyview/assets/close_new.png";
 		imageWidth = (int) (adViewManager.width / 6.4 / 3);
 		imageHeight = (int) (adViewManager.width / 6.4 / 3);
-		
+
 		ImageView closeButton = new ImageView(adViewLayout.getContext());
 		closeButton.setClickable(true);
 		BitmapDrawable btnClose = new BitmapDrawable(getClass()
@@ -218,7 +212,8 @@ public class AdViewLayout extends RelativeLayout {
 		LayoutParams lp = new LayoutParams(
 				(int) (adViewManager.width / 6.4 / 3),
 				(int) (adViewManager.width / 6.4 / 3));
-		lp.leftMargin=adViewManager.width-(int)(adViewManager.width / 6.4 / 3)-2;
+		lp.leftMargin = adViewManager.width
+				- (int) (adViewManager.width / 6.4 / 3) - 2;
 		lp.addRule(RelativeLayout.CENTER_VERTICAL);
 		adViewLayout.addView(closeButton, lp);
 		closeButton.setOnClickListener(new OnClickListener() {
@@ -519,7 +514,7 @@ public class AdViewLayout extends RelativeLayout {
 		if (activeRation != null) {
 			String url = String.format(AdViewUtil.urlImpression,
 					adViewManager.keyAdView, activeRation.nid,
-					activeRation.type, 0, "hello", appVersion,
+					activeRation.type, keyDev, "hello", appVersion,
 					adViewManager.mSimulator, keyDev,
 					AdViewUtil.currentSecond(), AdViewUtil.VERSION,
 					AdViewUtil.configVer);
@@ -532,7 +527,6 @@ public class AdViewLayout extends RelativeLayout {
 			if (adViewInterface != null)
 				adViewInterface.onDisplayAd();
 
-			listStatistics(activeRation.name, AdViewLayout.IMPRESSION, 1);
 		}
 	}
 
@@ -709,7 +703,6 @@ public class AdViewLayout extends RelativeLayout {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			closeAble = iscloseBtn(event);
-			listStatistics(activeRation.name, CLICK, 1);
 			// AdViewUtil.logInfo("Intercepted ACTION_DOWN event");
 			if (activeRation != null) {
 
@@ -776,11 +769,11 @@ public class AdViewLayout extends RelativeLayout {
 		mDensity = dm.density;
 		screenWidth = dm.widthPixels;
 		screenHeight = this.getHeight();
-//		height = (int) (imageHeight / mDensity);
-//		width = (int) (imageWidth / mDensity);
-		height=imageHeight;
-		width=imageWidth;
-		x = screenWidth / 2 - adViewManager.width / 2 + x-2;
+		// height = (int) (imageHeight / mDensity);
+		// width = (int) (imageWidth / mDensity);
+		height = imageHeight;
+		width = imageWidth;
+		x = screenWidth / 2 - adViewManager.width / 2 + x - 2;
 		screenWidth = screenWidth / 2 + adViewManager.width / 2;
 		return AdViewTargeting.getSwitcherMode() == SwitcherMode.DEFAULT ? true
 				: (x >= (screenWidth - width)
@@ -790,10 +783,6 @@ public class AdViewLayout extends RelativeLayout {
 
 	public void setAdViewInterface(AdViewInterface adViewInterface) {
 		this.adViewInterface = adViewInterface;
-	}
-
-	public void setStatisticsInterface(StatisticsInterface statisticsInterface) {
-		this.statisticsInterface = statisticsInterface;
 	}
 
 	private class InitRunnable implements Runnable {
@@ -969,86 +958,4 @@ public class AdViewLayout extends RelativeLayout {
 			}
 		}
 	}
-
-	public boolean cleanList() {
-		if (null != AdViewUtil.statisticsList) {
-			AdViewUtil.statisticsList.clear();
-			return true;
-		}
-		return false;
-	}
-
-	public void saveStatistics() {
-		String temp = ";";
-		Date date = new Date();
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-				"yyyy-MM-dd_HH:mm.ss ");
-		if (null != AdViewUtil.statisticsList)
-			for (int i = 0; i < AdViewUtil.statisticsList.size(); i++) {
-				temp = temp + AdViewUtil.statisticsList.get(i).getAdName()
-						+ "- ";
-				temp = temp + "展示："
-						+ AdViewUtil.statisticsList.get(i).getImpression();
-				temp = temp + ",点击："
-						+ AdViewUtil.statisticsList.get(i).getClick();
-				temp = temp + ",失败："
-						+ AdViewUtil.statisticsList.get(i).getFailed() + ";\n";
-			}
-		if (temp.length() > 1)
-			AdViewUtil.writeLogtoFile(simpleDateFormat.format(date), false,
-					temp.substring(1, temp.length()));
-
-	}
-
-	public synchronized void listStatistics(String name, int type, int count) {
-		int temp = 0;
-		boolean isFound = false;
-		if (null == AdViewUtil.statisticsList)
-			AdViewUtil.statisticsList = new ArrayList<StatisticsBean>();
-
-		for (int i = 0; i < AdViewUtil.statisticsList.size(); i++) {
-			if (AdViewUtil.statisticsList.get(i).getAdName().equals(name)) {
-				switch (type) {
-				case CLICK:
-					temp = AdViewUtil.statisticsList.get(i).getClick();
-					AdViewUtil.statisticsList.get(i).setClick(temp + count);
-					break;
-				case IMPRESSION:
-					temp = AdViewUtil.statisticsList.get(i).getImpression();
-					AdViewUtil.statisticsList.get(i)
-							.setImpression(temp + count);
-					break;
-
-				case FAIL:
-					temp = AdViewUtil.statisticsList.get(i).getFailed();
-					AdViewUtil.statisticsList.get(i).setFailed(temp + count);
-					break;
-
-				}
-				isFound = true;
-			}
-
-		}
-		if (!isFound) {
-			StatisticsBean statisticsBean = new StatisticsBean();
-			statisticsBean.setAdName(name);
-			switch (type) {
-			case CLICK:
-				statisticsBean.setClick(count);
-				break;
-			case IMPRESSION:
-				statisticsBean.setImpression(count);
-				break;
-			case FAIL:
-				statisticsBean.setFailed(count);
-				break;
-			}
-			AdViewUtil.statisticsList.add(statisticsBean);
-		}
-
-		if (null != statisticsInterface)
-			statisticsInterface.onListChange(AdViewUtil.statisticsList);
-
-	}
-
 }

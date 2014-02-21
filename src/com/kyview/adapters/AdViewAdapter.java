@@ -344,7 +344,6 @@ public abstract class AdViewAdapter {
 	public void onFailed(AdViewLayout adViewLayout, Ration ration) {
 		AdViewReqManager.getInstance(adViewLayout.activityReference.get())
 				.storeInfo(adViewLayout, ration.type, AdViewUtil.COUNTFAIL);
-		adViewLayout.listStatistics(ration.name, AdViewLayout.FAIL, 1);
 		adViewLayout.rotateThreadedPri(1);
 	}
 

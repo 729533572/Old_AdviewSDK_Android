@@ -1,12 +1,12 @@
 package com.kyview.adapters;
 
-import com.kuaiyou.adfill.ad.AdViewBIDView;
-import com.kuaiyou.adfill.ad.KyAdBaseView;
-import com.kuaiyou.adfill.interfaces.OnAdListener;
+import com.kuaiyou.KyAdBaseView;
+import com.kuaiyou.adbid.AdViewBIDView;
+import com.kuaiyou.interfaces.OnAdListener;
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
-import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.AdViewTargeting;
+import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
@@ -21,7 +21,7 @@ public class AdFillAdapter extends AdViewAdapter implements OnAdListener {
 
 	public static void load(AdViewAdRegistry registry) {
 		try {
-			if (Class.forName("com.kuaiyou.adfill.ad.AdViewBIDView") != null) {
+			if (Class.forName("com.kuaiyou.adbid.AdViewBIDView") != null) {
 				registry.registerClass(networkType(), AdFillAdapter.class);
 			}
 		} catch (ClassNotFoundException e) {
@@ -93,6 +93,12 @@ public class AdFillAdapter extends AdViewAdapter implements OnAdListener {
 	@Override
 	public void clean() {
 		super.clean();
+	}
+
+	@Override
+	public void onAdClose(KyAdBaseView view) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

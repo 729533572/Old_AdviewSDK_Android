@@ -11,18 +11,19 @@ import com.baidu.mobads.AdView;
 import com.baidu.mobads.AdViewListener;
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
-import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.AdViewTargeting;
+import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
 
 public class AdBaiduAdapter extends AdViewAdapter implements AdViewListener {
-	private boolean isFailed=false;
-	
+	private boolean isFailed = false;
+	private AdView adView = null;
+
 	private static int networkType() {
 		return AdViewUtil.NETWORK_TYPE_BAIDU;
-	} 
+	}
 
 	public static void load(AdViewAdRegistry registry) {
 		try {
@@ -30,7 +31,7 @@ public class AdBaiduAdapter extends AdViewAdapter implements AdViewListener {
 				registry.registerClass(networkType(), AdBaiduAdapter.class);
 			}
 		} catch (ClassNotFoundException e) {
-		} 
+		}
 	}
 
 	public AdBaiduAdapter() {
@@ -66,7 +67,6 @@ public class AdBaiduAdapter extends AdViewAdapter implements AdViewListener {
 			return;
 		}
 
-		adViewLayout.removeAllViews();
 		adViewLayout.activeRation = adViewLayout.nextRation;
 		// if((ration.key3).compareTo("1")==0)
 		// new AdService(activity,adViewLayout, new ViewGroup.LayoutParams(-1,
@@ -74,7 +74,7 @@ public class AdBaiduAdapter extends AdViewAdapter implements AdViewListener {
 		// else
 		new AdService(activity, adViewLayout,
 				new ViewGroup.LayoutParams(-1, -2), this);
-		}
+	}
 
 	@Override
 	public void onAdClick(JSONObject arg0) {
@@ -89,41 +89,40 @@ public class AdBaiduAdapter extends AdViewAdapter implements AdViewListener {
 
 	@Override
 	public void onAdFailed(String arg0) {
-		isFailed=true;
-		AdViewUtil.logInfo("AdViewListener.onAdFailed, reason="
-				+ arg0);
+		isFailed = true;
+		AdViewUtil.logInfo("AdViewListener.onAdFailed, reason=" + arg0);
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if (adViewLayout == null) {
 			return;
 		}
 		super.onFailed(adViewLayout, ration);
-//		adViewLayout.rotateThreadedPri(1);
+		// adViewLayout.rotateThreadedPri(1);
 	}
 
 	@Override
-	public void onAdReady(AdView arg0) {	
+	public void onAdReady(AdView arg0) {
 		AdViewUtil.logInfo("onAdReady");
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if(adViewLayout == null) {
-		return;
-		}
+		if (adViewLayout == null)
+			return;
+		adView = arg0;
 		super.onSuccessed(adViewLayout, ration);
-		if(!isFailed){
-		adViewLayout.adViewManager.resetRollover();
-		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0));
-		adViewLayout.rotateThreadedDelayed();
-		isFailed=false;
-		}
+
 	}
 
 	@Override
 	public void onAdShow(JSONObject arg0) {
 		AdViewUtil.logInfo("onAdShow");
-//		AdViewLayout adViewLayout = adViewLayoutReference.get();
-//		if (adViewLayout == null) {
-//			return;
-//		}
-//		adViewLayout.reportBaiduImpression();
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if (adViewLayout == null) {
+			return;
+		}
+		if (!isFailed) {
+			adViewLayout.adViewManager.resetRollover();
+			adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView));
+			adViewLayout.rotateThreadedDelayed();
+			isFailed = false;
+		}
 	}
 
 	@Override
@@ -169,11 +168,16 @@ public class AdBaiduAdapter extends AdViewAdapter implements AdViewListener {
 	public void onVideoStart() {
 		// TODO Auto-generated method stub
 	}
+
 	@Override
 	public void clean() {
-		// TODO Auto-generated method stub
 		super.clean();
+		try {
+			if (null != adView)
+				adView = null;
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
-
 
 }
