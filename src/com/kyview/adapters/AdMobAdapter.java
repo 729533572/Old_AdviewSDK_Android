@@ -4,20 +4,18 @@ import java.text.SimpleDateFormat;
 
 import android.app.Activity;
 
-import com.google.ads.Ad;
-import com.google.ads.AdListener;
 import com.google.ads.AdRequest;
-import com.google.ads.AdRequest.ErrorCode;
-import com.google.ads.AdSize;
-import com.google.ads.AdView;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest.Builder;
+import com.google.android.gms.ads.AdView;
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
-import com.kyview.AdViewTargeting;
 import com.kyview.AdViewLayout.ViewAdRunnable;
+import com.kyview.AdViewTargeting;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
 
-public class AdMobAdapter extends AdViewAdapter implements AdListener {
+public class AdMobAdapter extends AdViewAdapter {
 	private AdView adView;
 
 	private static int networkType() {
@@ -26,7 +24,7 @@ public class AdMobAdapter extends AdViewAdapter implements AdListener {
 
 	public static void load(AdViewAdRegistry registry) {
 		try {
-			if (Class.forName("com.google.ads.AdView") != null) {
+			if (Class.forName("com.google.android.gms.ads.AdView") != null) {
 				registry.registerClass(networkType(), AdMobAdapter.class);
 			}
 		} catch (ClassNotFoundException e) {
@@ -70,96 +68,90 @@ public class AdMobAdapter extends AdViewAdapter implements AdListener {
 		if (activity == null) {
 			return;
 		}
-		adView = new AdView(activity, AdSize.BANNER, ration.key);
-		adView.setAdListener(this);
+		adView = new AdView(activity);
+		adView.setAdSize(com.google.android.gms.ads.AdSize.SMART_BANNER);
+		adView.setAdUnitId(ration.key);
+		// Create an ad request.
+		Builder adRequestBuilder = new Builder();
 
-		adView.loadAd(requestForAdWhirlLayout(adViewLayout));
+		// Optionally populate the ad request builder.
+		// adRequestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
 
-	}
+		// Add the AdView to the view hierarchy.
 
-	protected AdRequest requestForAdWhirlLayout(AdViewLayout layout) {
-		AdRequest result = new AdRequest();
-		/*
-		 * if(AdViewTargeting.getRunMode()==RunMode.TEST)
-		 * result.addTestDevice(AdRequest.TEST_EMULATOR); else
-		 * if(AdViewTargeting.getRunMode()==RunMode.NORMAL)
-		 * ;//result.setTesting(false); else ;//result.setTesting(false);
-		 * result.setGender(genderForAdViewTargeting());
-		 * result.setBirthday(birthdayForAdViewTargeting());
-		 * result.setKeywords(AdViewTargeting.getKeywordSet());
-		 */
-		return result;
-	}
+		// Start loading the ad.
 
-	@Override
-	public void onDismissScreen(Ad arg0) {
-		// TODO Auto-generated method stub
-		AdViewUtil.logInfo("AdMob onDismissScreen");
-	}
+		adView.setAdListener(new AdListener() {
+			@Override
+			public void onAdFailedToLoad(int errorCode) {
+				// TODO Auto-generated method stub
+				super.onAdFailedToLoad(errorCode);
+				AdViewUtil.logInfo("AdMob onAdFailedToLoa" + errorCode);
+				adView.setAdListener(null);
+				AdViewLayout adViewLayout = adViewLayoutReference.get();
+				if (adViewLayout == null) {
+					return;
+				}
+				AdMobAdapter.super.onFailed(adViewLayout, ration);
+			}
 
-	@Override
-	public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
-		AdViewUtil.logInfo("AdMob fail " + arg1);
-		arg0.setAdListener(null);
-		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if (adViewLayout == null) {
-			return;
-		}
-		super.onFailed(adViewLayout, ration);
-		// adViewLayout.rotateThreadedPri(1);
-	}
+			@Override
+			public void onAdClosed() {
+				// TODO Auto-generated method stub
+				super.onAdClosed();
+				AdViewUtil.logInfo("AdMob onAdClosed");
+			}
 
-	@Override
-	public void onLeaveApplication(Ad arg0) {
-		// TODO Auto-generated method stub
-		AdViewUtil.logInfo("AdMob onLeaveApplication");
-	}
+			@Override
+			public void onAdLeftApplication() {
+				// TODO Auto-generated method stub
+				super.onAdLeftApplication();
+				AdViewUtil.logInfo("AdMob onAdLeftApplication");
+			}
 
-	@Override
-	public void onPresentScreen(Ad arg0) {
-		// TODO Auto-generated method stub
-		AdViewUtil.logInfo("AdMob onPresentScreen");
+			@Override
+			public void onAdLoaded() {
+				// TODO Auto-generated method stub
+				super.onAdLoaded();
+				AdViewUtil.logInfo("AdMob onAdLoaded");
+				if (null == adView)
+					return;
+				adView.pause();
+				AdViewLayout adViewLayout = adViewLayoutReference.get();
+				if (adViewLayout == null) {
+					return;
+				}
+				AdMobAdapter.super.onSuccessed(adViewLayout, ration);
+				adViewLayout.adViewManager.resetRollover();
+				adViewLayout.handler.post(new ViewAdRunnable(adViewLayout,
+						adView));
+				adViewLayout.rotateThreadedDelayed();
+			}
 
-		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if (adViewLayout == null) {
-			return;
-		}
-		// adViewLayout.reportImpression();
-	}
+			@Override
+			public void onAdOpened() {
+				// TODO Auto-generated method stub
+				super.onAdOpened();
+				AdViewUtil.logInfo("AdMob onAdOpened");
+			}
+		});
 
-	@Override
-	public void onReceiveAd(Ad arg0) {
-		AdViewUtil.logInfo("AdMob success");
-		arg0.setAdListener(null);
-		AdViewLayout adViewLayout = adViewLayoutReference.get();
-		if (adViewLayout == null) {
-			return;
-		}
-		if (!(arg0 instanceof AdView)) {
-			return;
-		}
-		super.onSuccessed(adViewLayout, ration);
-		adView = (AdView) arg0;
-		adViewLayout.adViewManager.resetRollover();
-		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView));
-		adViewLayout.rotateThreadedDelayed();
-
+		adView.loadAd(adRequestBuilder.build());
+		// adViewLayout.AddSubView(adView);
 	}
 
 	@Override
 	public void clean() {
+		// TODO Auto-generated method stub
 		super.clean();
-		try {
-			if (adView != null) {
-				adView.setAdListener(null);
-				adView.destroy();
-			}
-			adView = null;
-			AdViewUtil.logInfo("release AdMob");
-		} catch (Exception e) {
-			// TODO: handle exception
+
+		if (adView != null) {
+			adView.setAdListener(null);
+			adView.destroy();
 		}
 
+		adView = null;
+		AdViewUtil.logInfo("release AdMob");
 	}
 
 	/*******************************************************************/

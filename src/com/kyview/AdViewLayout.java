@@ -1,7 +1,7 @@
 package com.kyview;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.net.URLEncoder;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -42,13 +42,12 @@ import com.kyview.obj.Extra;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewReqManager;
 import com.kyview.util.AdViewUtil;
-import com.kyview.util.CrashHandler;
 import com.kyview.util.MD5;
 
 //import com.kyview.AdViewTargeting.Channel;
 
 public class AdViewLayout extends RelativeLayout {
-	public final WeakReference<Activity> activityReference;
+	public final SoftReference<Activity> activityReference;
 
 	public final Handler handler;
 
@@ -82,7 +81,7 @@ public class AdViewLayout extends RelativeLayout {
 	private boolean isStoped = false;
 
 	// public RelativeLayout baiduView=null;
-	public WeakReference<RelativeLayout> superViewReference;
+	public SoftReference<RelativeLayout> superViewReference;
 
 	public Ration activeRation;
 	public Ration nextRation;
@@ -114,6 +113,10 @@ public class AdViewLayout extends RelativeLayout {
 		isTerminated = true;
 	}
 
+	public void setPauseAd(boolean isPause) {
+		this.isStoped = isPause;
+	}
+
 	public void setClosed(boolean isClosed) {
 		this.isClosed = isClosed;
 		this.isStoped = false;
@@ -133,8 +136,8 @@ public class AdViewLayout extends RelativeLayout {
 
 	public AdViewLayout(final Activity context, final String keyAdView) {
 		super(context);
-		this.activityReference = new WeakReference<Activity>(context);
-		this.superViewReference = new WeakReference<RelativeLayout>(this);
+		this.activityReference = new SoftReference<Activity>(context);
+		this.superViewReference = new SoftReference<RelativeLayout>(this);
 
 		this.keyAdView = keyAdView;
 
@@ -158,8 +161,8 @@ public class AdViewLayout extends RelativeLayout {
 	}
 
 	private void CatchCrashInfo(Context context) {
-		CrashHandler crashHandler = CrashHandler.getInstance();
-		crashHandler.init(context);
+		// CrashHandler crashHandler = CrashHandler.getInstance();
+		// crashHandler.init(context);
 	}
 
 	public AdViewLayout(Context context, AttributeSet attrs) {
@@ -169,8 +172,8 @@ public class AdViewLayout extends RelativeLayout {
 			key = "";
 		}
 		Activity activity = (Activity) context;
-		this.activityReference = new WeakReference<Activity>(activity);
-		this.superViewReference = new WeakReference<RelativeLayout>(this);
+		this.activityReference = new SoftReference<Activity>(activity);
+		this.superViewReference = new SoftReference<RelativeLayout>(this);
 		this.keyAdView = key;
 		this.hasWindow = true;
 		this.isTerminated = false;
@@ -200,7 +203,7 @@ public class AdViewLayout extends RelativeLayout {
 					.getMetrics(dm);
 			mDensity = dm.density;
 		}
-		resoursePath = "/com/kyview/assets/close_new.png";
+		resoursePath = "/assets/close_new.png";
 		imageWidth = (int) (adViewManager.width / 6.4 / 3);
 		imageHeight = (int) (adViewManager.width / 6.4 / 3);
 
@@ -357,6 +360,14 @@ public class AdViewLayout extends RelativeLayout {
 	private void handleAd() {
 		// We shouldn't ever get to a state where nextRation is null unless all
 		// networks fail
+		if (isStoped) {
+			// 停止请求
+			AdViewUtil.logInfo("stop required");
+			rotateThreadedDelayed();
+			// scheduler.schedule(new RotateAdRunnable(this), 5,
+			// TimeUnit.SECONDS);
+			return;
+		}
 		if (nextRation == null) {
 			AdViewUtil.logInfo("nextRation is null!");
 			rotateThreadedDelayed();
@@ -365,14 +376,6 @@ public class AdViewLayout extends RelativeLayout {
 		}
 		if (isScreenLocked()) {
 			AdViewUtil.logInfo("screen is locked");
-			rotateThreadedPri(5);
-			// scheduler.schedule(new RotateAdRunnable(this), 5,
-			// TimeUnit.SECONDS);
-			return;
-		}
-		if (isStoped) {
-			// 停止请求
-			AdViewUtil.logInfo("stop required");
 			rotateThreadedPri(5);
 			// scheduler.schedule(new RotateAdRunnable(this), 5,
 			// TimeUnit.SECONDS);
@@ -418,11 +421,13 @@ public class AdViewLayout extends RelativeLayout {
 	}
 
 	// Remove old views and push the new one
-	public void pushSubView(ViewGroup subView) {
+	public void pushSubView(View subView) {
 		RelativeLayout superView = superViewReference.get();
 		if (superView == null) {
 			return;
 		}
+		if (null == subView)
+			return;
 		superView.removeAllViews();
 		RelativeLayout.LayoutParams layoutParams;
 		if (nextRation == null) {
@@ -466,7 +471,7 @@ public class AdViewLayout extends RelativeLayout {
 		countImpression();
 	}
 
-	public void AddSubView(RelativeLayout subView) {
+	public void AddSubView(ViewGroup subView) {
 		RelativeLayout superView = superViewReference.get();
 		if (superView == null) {
 			return;
@@ -786,11 +791,11 @@ public class AdViewLayout extends RelativeLayout {
 	}
 
 	private class InitRunnable implements Runnable {
-		private WeakReference<AdViewLayout> adViewLayoutReference;
+		private SoftReference<AdViewLayout> adViewLayoutReference;
 		private String keyAdView;
 
 		public InitRunnable(AdViewLayout adViewLayout, String keyAdView) {
-			adViewLayoutReference = new WeakReference<AdViewLayout>(
+			adViewLayoutReference = new SoftReference<AdViewLayout>(
 					adViewLayout);
 			this.keyAdView = keyAdView;
 		}
@@ -810,7 +815,7 @@ public class AdViewLayout extends RelativeLayout {
 
 				if (adViewLayout.adViewManager == null) {
 					adViewLayout.adViewManager = new AdViewManager(
-							new WeakReference<Context>(
+							new SoftReference<Context>(
 									activity.getApplicationContext()),
 							keyAdView);
 				}
@@ -843,10 +848,10 @@ public class AdViewLayout extends RelativeLayout {
 	}
 
 	private static class HandleAdRunnable implements Runnable {
-		private WeakReference<AdViewLayout> adViewLayoutReference;
+		private SoftReference<AdViewLayout> adViewLayoutReference;
 
 		public HandleAdRunnable(AdViewLayout adViewLayout) {
-			adViewLayoutReference = new WeakReference<AdViewLayout>(
+			adViewLayoutReference = new SoftReference<AdViewLayout>(
 					adViewLayout);
 		}
 
@@ -859,11 +864,11 @@ public class AdViewLayout extends RelativeLayout {
 	}
 
 	public static class ViewAdRunnable implements Runnable {
-		private WeakReference<AdViewLayout> adViewLayoutReference;
-		private ViewGroup nextView;
+		private SoftReference<AdViewLayout> adViewLayoutReference;
+		private View nextView;
 
-		public ViewAdRunnable(AdViewLayout adViewLayout, ViewGroup nextView) {
-			adViewLayoutReference = new WeakReference<AdViewLayout>(
+		public ViewAdRunnable(AdViewLayout adViewLayout, View nextView) {
+			adViewLayoutReference = new SoftReference<AdViewLayout>(
 					adViewLayout);
 			this.nextView = nextView;
 		}
@@ -877,10 +882,10 @@ public class AdViewLayout extends RelativeLayout {
 	}
 
 	private static class RotateAdRunnable implements Runnable {
-		private WeakReference<AdViewLayout> adViewLayoutReference;
+		private SoftReference<AdViewLayout> adViewLayoutReference;
 
 		public RotateAdRunnable(AdViewLayout adViewLayout) {
-			adViewLayoutReference = new WeakReference<AdViewLayout>(
+			adViewLayoutReference = new SoftReference<AdViewLayout>(
 					adViewLayout);
 		}
 
@@ -893,10 +898,10 @@ public class AdViewLayout extends RelativeLayout {
 	}
 
 	private static class RotatePriAdRunnable implements Runnable {
-		private WeakReference<AdViewLayout> adViewLayoutReference;
+		private SoftReference<AdViewLayout> adViewLayoutReference;
 
 		public RotatePriAdRunnable(AdViewLayout adViewLayout) {
-			adViewLayoutReference = new WeakReference<AdViewLayout>(
+			adViewLayoutReference = new SoftReference<AdViewLayout>(
 					adViewLayout);
 		}
 
@@ -909,10 +914,10 @@ public class AdViewLayout extends RelativeLayout {
 	}
 
 	private static class GetConfigRunnable implements Runnable {
-		private WeakReference<AdViewLayout> adViewLayoutReference;
+		private SoftReference<AdViewLayout> adViewLayoutReference;
 
 		public GetConfigRunnable(AdViewLayout adViewLayout) {
-			adViewLayoutReference = new WeakReference<AdViewLayout>(
+			adViewLayoutReference = new SoftReference<AdViewLayout>(
 					adViewLayout);
 		}
 
@@ -925,10 +930,10 @@ public class AdViewLayout extends RelativeLayout {
 				if (adViewLayout.adViewManager != null) {
 					adViewLayout.adViewManager
 							.fetchConfigFromServer(adViewLayout);
+					adViewLayout
+							.fetchConfigThreadedDelayed(adViewLayout.adViewManager
+									.getConfigExpiereTimeout());
 				}
-				adViewLayout
-						.fetchConfigThreadedDelayed(adViewLayout.adViewManager
-								.getConfigExpiereTimeout());
 			}
 		}
 	}

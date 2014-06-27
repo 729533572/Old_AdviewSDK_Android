@@ -78,8 +78,7 @@ import java.nio.ByteBuffer;
  * UUDecoder 85 * @see BASE64Decoder 86
  */
 
-public abstract class CharacterDecoder
-{
+public abstract class CharacterDecoder {
 
 	/** Return the number of bytes per atom of decoding */
 	abstract protected int bytesPerAtom();
@@ -89,14 +88,12 @@ public abstract class CharacterDecoder
 
 	/** decode the beginning of the buffer, by default this is a NOP. */
 	protected void decodeBufferPrefix(PushbackInputStream aStream,
-			OutputStream bStream) throws IOException
-	{
+			OutputStream bStream) throws IOException {
 	}
 
 	/** decode the buffer suffix, again by default it is a NOP. */
 	protected void decodeBufferSuffix(PushbackInputStream aStream,
-			OutputStream bStream) throws IOException
-	{
+			OutputStream bStream) throws IOException {
 	}
 
 	/**
@@ -106,8 +103,7 @@ public abstract class CharacterDecoder
 	 * been encoded on the line. 107
 	 */
 	protected int decodeLinePrefix(PushbackInputStream aStream,
-			OutputStream bStream) throws IOException
-	{
+			OutputStream bStream) throws IOException {
 		return (bytesPerLine());
 	}
 
@@ -118,8 +114,7 @@ public abstract class CharacterDecoder
 	 * (newline) character. 117
 	 */
 	protected void decodeLineSuffix(PushbackInputStream aStream,
-			OutputStream bStream) throws IOException
-	{
+			OutputStream bStream) throws IOException {
 	}
 
 	/**
@@ -129,8 +124,7 @@ public abstract class CharacterDecoder
 	 * 124
 	 */
 	protected void decodeAtom(PushbackInputStream aStream,
-			OutputStream bStream, int l) throws IOException
-	{
+			OutputStream bStream, int l) throws IOException {
 		throw new CEStreamExhausted();
 	}
 
@@ -139,10 +133,8 @@ public abstract class CharacterDecoder
 	 * BufferedInputStream's 131 * read method. 132
 	 */
 	protected int readFully(InputStream in, byte buffer[], int offset, int len)
-			throws java.io.IOException
-	{
-		for (int i = 0; i < len; i++)
-		{
+			throws java.io.IOException {
+		for (int i = 0; i < len; i++) {
 			int q = in.read();
 			if (q == -1)
 				return ((i == 0) ? -1 : i);
@@ -159,37 +151,30 @@ public abstract class CharacterDecoder
 	 * unexpectedly out of data 150
 	 */
 	public void decodeBuffer(InputStream aStream, OutputStream bStream)
-			throws IOException
-	{
+			throws IOException {
 		int i;
-		int totalBytes = 0;
+		// int totalBytes = 0;
 
 		PushbackInputStream ps = new PushbackInputStream(aStream);
 		decodeBufferPrefix(ps, bStream);
-		while (true)
-		{
+		while (true) {
 			int length;
 
-			try
-			{
+			try {
 				length = decodeLinePrefix(ps, bStream);
-				for (i = 0; (i + bytesPerAtom()) < length; i += bytesPerAtom())
-				{
+				for (i = 0; (i + bytesPerAtom()) < length; i += bytesPerAtom()) {
 					decodeAtom(ps, bStream, bytesPerAtom());
-					totalBytes += bytesPerAtom();
+					// totalBytes += bytesPerAtom();
 				}
-				if ((i + bytesPerAtom()) == length)
-				{
+				if ((i + bytesPerAtom()) == length) {
 					decodeAtom(ps, bStream, bytesPerAtom());
-					totalBytes += bytesPerAtom();
-				} else
-				{
+					// totalBytes += bytesPerAtom();
+				} else {
 					decodeAtom(ps, bStream, length - i);
-					totalBytes += (length - i);
+					// totalBytes += (length - i);
 				}
 				decodeLineSuffix(ps, bStream);
-			} catch (CEStreamExhausted e)
-			{
+			} catch (CEStreamExhausted e) {
 				break;
 			}
 		}
@@ -201,8 +186,7 @@ public abstract class CharacterDecoder
 	 * encoded 183 * buffer and returns a byte array containing the data. 184 * @exception
 	 * CEFormatException An error has occured while decoding 185
 	 */
-	public byte decodeBuffer(String inputString)[] throws IOException
-	{
+	public byte decodeBuffer(String inputString)[] throws IOException {
 		byte inputBuffer[] = new byte[inputString.length()];
 		ByteArrayInputStream inStream;
 		ByteArrayOutputStream outStream;
@@ -217,8 +201,7 @@ public abstract class CharacterDecoder
 	/**
 	 * 199 * Decode the contents of the inputstream into a buffer. 200
 	 */
-	public byte decodeBuffer(InputStream in)[] throws IOException
-	{
+	public byte decodeBuffer(InputStream in)[] throws IOException {
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 		decodeBuffer(in, outStream);
 		return (outStream.toByteArray());
@@ -228,8 +211,7 @@ public abstract class CharacterDecoder
 	 * 208 * Decode the contents of the String into a ByteBuffer. 209
 	 */
 	public ByteBuffer decodeBufferToByteBuffer(String inputString)
-			throws IOException
-	{
+			throws IOException {
 		return ByteBuffer.wrap(decodeBuffer(inputString));
 	}
 
@@ -237,8 +219,7 @@ public abstract class CharacterDecoder
 	 * 216 * Decode the contents of the inputStream into a ByteBuffer. 217
 	 */
 	public ByteBuffer decodeBufferToByteBuffer(InputStream in)
-			throws IOException
-	{
+			throws IOException {
 		return ByteBuffer.wrap(decodeBuffer(in));
 	}
 }

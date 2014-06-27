@@ -1,7 +1,7 @@
 package com.kyview.adapters;
 
-import com.kuaiyou.KyAdBaseView;
 import com.kuaiyou.adbid.AdViewBIDView;
+import com.kuaiyou.KyAdBaseView;
 import com.kuaiyou.interfaces.OnAdListener;
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;

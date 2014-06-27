@@ -4,7 +4,6 @@ import android.app.Activity;
 
 import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
-import com.kyview.AdViewLayout.ViewAdRunnable;
 import com.kyview.AdViewTargeting;
 import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.obj.Ration;
@@ -15,7 +14,7 @@ import com.qq.e.ads.AdSize;
 import com.qq.e.ads.AdView;
 
 public class GdtAdapter extends AdViewAdapter implements AdListener {
-	private AdView adv=null;
+	private AdView adv = null;
 
 	private static int networkType() {
 		return AdViewUtil.NETWORK_TYPE_GDT;
@@ -49,11 +48,10 @@ public class GdtAdapter extends AdViewAdapter implements AdListener {
 		if (activity == null)
 			return;
 
-		adv = new AdView(activity, AdSize.BANNER, ration.key,
-				ration.key2);
-		adViewLayout.adViewManager.resetRollover();
-		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adv));
-		adViewLayout.rotateThreadedDelayed();
+		adv = new AdView(activity, AdSize.BANNER, ration.key, ration.key2);
+		// adViewLayout.adViewManager.resetRollover();
+		// adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adv));
+		// adViewLayout.rotateThreadedDelayed();
 
 		AdRequest adr = new AdRequest();
 		if (AdViewTargeting.getRunMode() == RunMode.TEST)
@@ -64,11 +62,22 @@ public class GdtAdapter extends AdViewAdapter implements AdListener {
 		adv.setAdListener(this);
 		adv.fetchAd(adr);
 
+		adViewLayout.AddSubView(adv);
 	}
 
 	@Override
 	public void onAdReceiv() {
 		AdViewUtil.logInfo("onAdReceiv");
+
+		AdViewLayout adViewLayout = adViewLayoutReference.get();
+		if (adViewLayout == null) {
+			return;
+		}
+		super.onSuccessed(adViewLayout, ration);
+		adViewLayout.reportImpression();
+		adViewLayout.adViewManager.resetRollover();
+		// adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, adView));
+		adViewLayout.rotateThreadedDelayed();
 	}
 
 	@Override
@@ -80,10 +89,11 @@ public class GdtAdapter extends AdViewAdapter implements AdListener {
 		}
 		super.onFailed(adViewLayout, ration);
 	}
+
 	@Override
 	public void clean() {
 		super.clean();
-		if(null!=adv)
-			adv=null;
+		if (null != adv)
+			adv = null;
 	}
 }

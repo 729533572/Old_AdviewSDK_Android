@@ -8,15 +8,14 @@ import com.kyview.AdViewTargeting;
 import com.kyview.AdViewTargeting.RunMode;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
-import com.punchbox.PunchBox;
+import com.punchbox.ads.AdRequest;
+import com.punchbox.ads.AdView;
 import com.punchbox.exception.PBException;
 import com.punchbox.listener.AdListener;
-import com.punchbox.request.FixedAdRequest;
-import com.punchbox.view.FixedAdView;
 
 public class PunchBoxAdapter extends AdViewAdapter implements AdListener {
 	private Activity context;
-	private FixedAdView mFixedadView = null;
+	private AdView mFixedadView = null;
 
 	private static int networkType() {
 		return AdViewUtil.NETWORK_TYPE_PUNCHBOX;
@@ -36,25 +35,24 @@ public class PunchBoxAdapter extends AdViewAdapter implements AdListener {
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if (null == adViewLayout)
 			return;
-		PunchBox mPb = PunchBox.getInstance(context);
-		FixedAdRequest request = new FixedAdRequest(context);
-		mFixedadView = new FixedAdView(context);
-		
+		// AdView mPb = PunchBox.getInstance(context);
+		// FixedAdRequest request = new FixedAdRequest(context);
+		mFixedadView = new AdView(context, ration.key2);
 
 		if (AdViewTargeting.getRunMode() == RunMode.TEST)
-			mPb.setAppID(context, "22222222-2222-2222-2222-222222222222");
+			mFixedadView.setPublisherId("100011-0A2E90-7CDB-6FD3-A9B983ABBBBA");
 		else
-			mPb.setAppID(context, ration.key);
+			mFixedadView.setPublisherId(ration.key);
 
-		mPb.setServerMode(false);
-
-		mFixedadView.setDisplayInterval(Integer.MAX_VALUE);
+		// mFixedadView.setServerMode(false);
+		mFixedadView.setRequestInterval(500);
+		mFixedadView.setDisplayTime(500);
 
 		mFixedadView.setAdListener(this);
 		// 正式请求广告
-		mFixedadView.loadAd(request);
+		mFixedadView.loadAd(new AdRequest());
 		adViewLayout.AddSubView(mFixedadView);
-		
+
 	}
 
 	@Override
@@ -75,7 +73,7 @@ public class PunchBoxAdapter extends AdViewAdapter implements AdListener {
 			return;
 		}
 		super.onFailed(adViewLayout, ration);
-		//adViewLayout.rotateThreadedPri(1);
+		// adViewLayout.rotateThreadedPri(1);
 
 	}
 
@@ -83,16 +81,6 @@ public class PunchBoxAdapter extends AdViewAdapter implements AdListener {
 	public void onPresentScreen() {
 		AdViewUtil.logInfo("onPresentScreen");
 	}
-
-//	@Override
-//	public void onTouched() {
-//		AdViewUtil.logInfo("onAdClick");
-//		AdViewLayout adViewLayout = adViewLayoutReference.get();
-//		if (adViewLayout == null) {
-//			return;
-//		}
-//		adViewLayout.reportClick();
-//	}
 
 	@Override
 	public void onReceiveAd() {
@@ -110,12 +98,15 @@ public class PunchBoxAdapter extends AdViewAdapter implements AdListener {
 	@Override
 	public void clean() {
 		super.clean();
-		if (mFixedadView != null) {
-			AdViewUtil.logInfo("release punchbox");
-			mFixedadView.destroy();
-			mFixedadView = null;
+		try {
+			if (mFixedadView != null) {
+				AdViewUtil.logInfo("release punchbox");
+				mFixedadView.destroy();
+				mFixedadView = null;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
-
 
 }

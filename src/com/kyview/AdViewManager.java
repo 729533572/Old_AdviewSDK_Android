@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -50,7 +50,7 @@ public class AdViewManager {
 	private List<Ration> rationsList;
 	// private List<Ration> rationsList_pri;
 	private double totalWeight = 0;
-	private WeakReference<Context> contextReference;
+	private SoftReference<Context> contextReference;
 
 	// Default config expire timeout is 20 minutes.
 	public static int configExpireTimeout = 2 * 600;
@@ -74,7 +74,7 @@ public class AdViewManager {
 	public int height;
 	public String mDeviceid = "";
 
-	public AdViewManager(WeakReference<Context> contextReference,
+	public AdViewManager(SoftReference<Context> contextReference,
 			String keyAdView) {
 		Log.i("Android", "Creating weivda reganam...");
 		this.contextReference = contextReference;
@@ -276,7 +276,8 @@ public class AdViewManager {
 			jsonString = adViewPrefs.getString(PREFS_STRING_CONFIG, null);
 			mLastConfigTime = adViewPrefs.getLong(
 					AdViewUtil.PREFS_STRING_TIMESTAMP, 0);
-			AdViewUtil.logInfo(jsonString);
+			if (null != jsonString)
+				AdViewUtil.logInfo(jsonString);
 			return jsonString;
 		}
 

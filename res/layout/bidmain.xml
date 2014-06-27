@@ -13,7 +13,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hello" />
+            android:text="AdViewRTB" />
 
         <LinearLayout
             android:id="@+id/layout_main"
@@ -26,7 +26,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hello" />
+            android:text="AdViewRTB" />
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -35,7 +35,7 @@
             android:padding="10dp" >
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:gravity="left"
@@ -43,13 +43,27 @@
 
                 <Button
                     android:id="@+id/normal_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="正常模式" />
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:text="展示广告" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical" >
+
+                <Button
+                    android:id="@+id/pandora_btn"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:text="潘多拉" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:gravity="center"
@@ -57,13 +71,13 @@
 
                 <Button
                     android:id="@+id/clear_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="清空计数" />
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:text="展示插屏" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:gravity="right"
@@ -71,59 +85,11 @@
 
                 <Button
                     android:id="@+id/ceshi_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="测试模式" />
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:text="不要点我" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-
-   
-
-    <TextView
-        android:id="@+id/logtext"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:text="" />
- <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="平台名" />
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="展示" />
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="点击" />
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="失败" />
-    </LinearLayout>
-    <ListView
-        android:id="@+id/staticlayout"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:orientation="vertical" >
-    </ListView>
 
 </LinearLayout>

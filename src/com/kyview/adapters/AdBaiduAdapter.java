@@ -172,12 +172,8 @@ public class AdBaiduAdapter extends AdViewAdapter implements AdViewListener {
 	@Override
 	public void clean() {
 		super.clean();
-		try {
-			if (null != adView)
-				adView = null;
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+		if (null != adView)
+			adView = null;
 	}
 
 }

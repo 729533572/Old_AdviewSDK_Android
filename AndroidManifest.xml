@@ -5,11 +5,10 @@
     android:versionName="1.0" >
 
     <application
-        android:debuggable="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name" >
         <activity
-            android:name=".Invoker"
+            android:name="com.kyview.Invoker"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,19 +16,35 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <!-- 竞价插屏 -->
+        <activity
+            android:name="com.kuaiyou.AdViewInstlActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@android:style/Theme.Translucent" />
         <!-- AdView SDK for AdChina -->
         <activity
             android:name="com.adchina.android.ads.views.AdBrowserView"
-            android:configChanges="orientation|keyboard|keyboardHidden"
-            android:theme="@android:style/Theme.Translucent" />
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent" >
+        </activity>
+
+        <receiver android:name="com.adchina.android.ads.views.AdCompleteReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+        </receiver>
 
         <!-- AdView SDK for AdMob -->
-        <activity
-            android:name="com.google.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
-        <!-- android:configChanges="orientation|keyboard|keyboardHidden" /> -->
+        <activity android:name="com.google.android.gms.ads.AdActivity" />
+        <!--
+        如想使用Admob广告必须解开下面一行注释 
+        android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+        -->
 
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="4452000" />
 
         <!-- AdView SDK for AirAd -->
         <activity
@@ -47,7 +62,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation" />
 
         <meta-data
-            android:name="BaiduMobAd_DEBUG_TOKEN"
+            android:name="BaiduMobAd_DEBUG_TOKEN`"
             android:value="adview" />
 
         <!-- AdView SDK for Domob -->
@@ -89,6 +104,17 @@
             android:name="com.mobisage.android.MobiSageApkService"
             android:enabled="true" >
         </service>
+
+        <!-- AdView SDK for tencent Gdt -->
+        <service
+            android:name="com.qq.e.comm.DownloadService"
+            android:exported="false" >
+        </service>
+
+        <activity android:name="com.qq.e.ads.AdActivity" >
+        </activity>
+        <activity android:name="com.qq.e.ads.x" >
+        </activity>
 
         <!-- AdView SDK for tencent MobinWin -->
         <activity android:name="com.tencent.exmobwin.banner.MobWINBrowserActivity" >
@@ -149,6 +175,32 @@
             </intent-filter>
         </receiver>
 
+        <!--
+        AdView SDK for o2o  不适用百灵欧拓请务必删掉
+        <activity android:name="com.otomod.ad.AdActivity" >
+            <intent-filter>
+                <action android:name="com.otomod.ad.shortcut" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="com.otomod.ad.provider.ImageProvider"
+            android:authorities="com.example.otosdkdemo" />
+
+        <receiver android:name="com.otomod.ad.DownloadCompleteReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="org.OpenUDID.OpenUDID_service" >
+            <intent-filter>
+                <action android:name="org.openudid.GETUDID" />
+            </intent-filter>
+        </service>
+        -->
         <!-- AdView SDK for greystripe -->
         <!--
 	<provider android:name="com.greystripe.android.sdk.AdContentProvider"
@@ -159,7 +211,7 @@
 		<intent-filter>
 			<category android:name="android.intent.category.LAUNCHER" />
 		</intent-filter>
-	</activity>   
+	</activity>   
         -->
         <!-- AdView SDK for Momark -->
         <activity
@@ -179,6 +231,19 @@
             android:name="com.inmobi.androidsdk.IMBrowserActivity"
             android:configChanges="keyboardHidden|orientation|keyboard|smallestScreenSize|screenSize" />
 
+        <receiver
+            android:name="com.inmobi.commons.analytics.androidsdk.IMAdTrackerReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.inmobi.commons.internal.ActivityRecognitionManager"
+            android:enabled="true" />
+
         <!-- Adview SDK for YunYun -->
         <activity
             android:name="com.suizong.mobile.ads.AdBrowser"
@@ -188,46 +253,26 @@
 
         <!-- Adview SDK for aduu -->
         <activity
-            android:name="cn.aduu.android.AdSpotActivity"
-            android:theme="@android:style/Theme.Translucent" />
+            android:name="cn.aduu.android.AdActivity"
+            android:theme="@android:style/Theme.Translucent" >
+        </activity>
 
         <!-- Adview SDK for punchbox -->
-        <receiver android:name="com.punchbox.monitor.ArchiveMonitorReceiver" >
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.intent.action.USER_PRESENT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_ADDED" />
-
-                <data android:scheme="package" />
-            </intent-filter>
-        </receiver>
-
         <service
-            android:name="com.punchbox.monitor.ArchiveMonitorDownloadService"
-            android:enabled="true"
-            android:label="DownloadService"
-            android:process="org.punchbox.service" >
+            android:name="com.punchbox.engine.PunchBoxService"
+            android:exported="true"
+            android:process="com.punchbox.punchboxservice" >
+            <intent-filter>
+                <action android:name="com.punchbox.service" />
+            </intent-filter>
         </service>
 
         <!-- Adview SDK for zhidian -->
-        <activity android:name="com.adzhidian.ui.WebViewActivity"
-			android:configChanges="keyboardHidden|orientation" />
-        <service android:name="com.adzhidian.manager.service.AdService">
-		</service>
-		<meta-data android:value="PADVIEW" android:name="com.view.AdView.channel" />
-		<receiver android:label="NetWorkReceiver"
-		    android:name="com.adzhidian.manager.receiver.NetCheckReceiver"
-		    android:exported="false">
-			<intent-filter>
-				<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-				<action android:name="com.adzhidian.manager.receiver.NetCheckReceiver" />
-			</intent-filter>
-		</receiver>	  
+        <activity
+            android:name="com.adzhidian.ui.WebViewActivity"
+            android:configChanges="keyboardHidden|orientation" >
+        </activity>
 
-		
-        
         <!-- Must declare it for Adivew SDK -->
         <service android:name="com.kyview.DownloadService" />
 
@@ -259,10 +304,8 @@
 		COOLAPK(酷安网)
 		ANFONE(安丰)
 		APKOK(乐致网) 
-		360MARKET(360市场)
+		360MARKET(360市场)
         -->
-        <activity android:name="TestModeActivity" >
-        </activity>
     </application>
 
     <uses-sdk android:minSdkVersion="4" />
@@ -276,12 +319,17 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.GET_TASKS" /> <!-- momark -->
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- wiyun -->
-    <uses-permission android:name="android.permission.VIBRATE" /> <!-- 哇棒 -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- airAd -->
-    <uses-permission android:name="android.permission.SEND_SMS" /> <!-- aduu -->
-
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <!-- momark -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- wiyun -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- 哇棒 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- airAd -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <!-- aduu -->
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
     <!-- 以下为云云必要权限 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -298,7 +346,7 @@
     <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
-    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />  
+    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />  
     -->
 
 

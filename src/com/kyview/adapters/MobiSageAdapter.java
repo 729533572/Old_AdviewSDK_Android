@@ -55,7 +55,7 @@ public class MobiSageAdapter extends AdViewAdapter implements
 		if (activity == null) {
 			return;
 		}
-		MobiSageManager.getInstance().setPublisherID(ration.key);
+		MobiSageManager.getInstance().initMobiSageManager(activity, ration.key);
 		adv = new MobiSageAdBanner(activity);// MobiSageAdSize.Size_540X80
 
 		adv.setAdRefreshInterval(MobiSageEnviroment.AdRefreshInterval.Ad_No_Refresh);// Ad_Refresh_15//Ad_No_Refresh
@@ -80,7 +80,7 @@ public class MobiSageAdapter extends AdViewAdapter implements
 		// TODO Auto-generated method stub
 		super.clean();
 		if (adv != null) {
-			adv.destoryAdView();
+			adv.destroyAdView();
 			adv = null;
 		}
 	}
@@ -143,9 +143,9 @@ public class MobiSageAdapter extends AdViewAdapter implements
 		}
 		super.onSuccessed(adViewLayout, ration);
 
-		arg0.setMobiSageAdBannerListener(null);
 		adViewLayout.adViewManager.resetRollover();
-		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0));
+		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0
+				.getAdView()));
 		adViewLayout.rotateThreadedDelayed();
 
 		// adViewLayout.adViewManager.resetRollover();

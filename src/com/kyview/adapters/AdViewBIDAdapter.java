@@ -44,11 +44,6 @@ public class AdViewBIDAdapter extends AdViewAdapter implements OnAdListener {
 
 	}
 
-//	@Override
-//	public void click(int isMissTouch) {
-//		this.onAdClicked(adFillView, isMissTouch);
-//	}
-
 	@Override
 	public void initAdapter(AdViewLayout adViewLayout, Ration ration) {
 	}
@@ -66,8 +61,9 @@ public class AdViewBIDAdapter extends AdViewAdapter implements OnAdListener {
 		super.onSuccessed(adViewLayout, ration);
 
 		adViewLayout.adViewManager.resetRollover();
-//		adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, view));
-		adViewLayout.handler.postDelayed(new ViewAdRunnable(adViewLayout, view), 400);
+		// adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, view));
+		adViewLayout.handler.postDelayed(
+				new ViewAdRunnable(adViewLayout, view), 400);
 		adViewLayout.rotateThreadedDelayed();
 		// adViewLayout.AddSubView(view);
 	}
@@ -81,7 +77,7 @@ public class AdViewBIDAdapter extends AdViewAdapter implements OnAdListener {
 		if (adViewLayout == null) {
 			return;
 		}
-//		adViewLayout.rotateAd();
+		// adViewLayout.rotateAd();
 		super.onFailed(adViewLayout, ration);
 	}
 
@@ -104,7 +100,7 @@ public class AdViewBIDAdapter extends AdViewAdapter implements OnAdListener {
 	@Override
 	public void onAdClose(KyAdBaseView view) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

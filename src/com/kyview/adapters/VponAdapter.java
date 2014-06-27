@@ -6,53 +6,37 @@ import com.kyview.AdViewAdRegistry;
 import com.kyview.AdViewLayout;
 import com.kyview.obj.Ration;
 import com.kyview.util.AdViewUtil;
-import com.vpon.adon.android.AdListener;
-import com.vpon.adon.android.AdOnPlatform;
-import com.vpon.adon.android.AdView;
+import com.vpadn.ads.VpadnAd;
+import com.vpadn.ads.VpadnAdListener;
+import com.vpadn.ads.VpadnAdRequest;
+import com.vpadn.ads.VpadnAdRequest.VpadnErrorCode;
+import com.vpadn.ads.VpadnAdSize;
+import com.vpadn.ads.VpadnBanner;
 
-public class VponAdapter extends AdViewAdapter implements AdListener{
-	private int adHeight;
-	private int adWidth;
-	
+public class VponAdapter extends AdViewAdapter implements VpadnAdListener {
+	VpadnBanner vponBanner = null;
+
 	private static int networkType() {
 		return AdViewUtil.NETWORK_TYPE_VPON;
 	}
-	
+
 	public static void load(AdViewAdRegistry registry) {
 		try {
-			if(Class.forName("com.vpon.adon.android.AdView") != null) {
+			if (Class.forName("com.vpadn.ads.VpadnAdListener") != null) {
 				registry.registerClass(networkType(), VponAdapter.class);
 			}
-		} catch (ClassNotFoundException e) {}
+		} catch (ClassNotFoundException e) {
+		}
 	}
 
 	public VponAdapter() {
 	}
-	
+
 	@Override
 	public void initAdapter(AdViewLayout adViewLayout, Ration ration) {
 		// TODO Auto-generated constructor stub
 	}
 
-	private void calcAdSize(AdViewLayout adViewLayout) {
-		int width=320;
-		int height=48;
-		int screenWidth = adViewLayout.adViewManager.width;
-		if (screenWidth < 480) {
-			width = 320;
-			height = 48;
-		} else if (screenWidth < 720) {
-			width = 480;
-			height = 72;
-		} else if (screenWidth >= 720) {
-			width = 720;
-			height = 108;
-		}
-
-		adHeight = height;//AdViewUtil.convertToScreenPixels(height, adViewLayout.mDensity);
-		adWidth = width;//AdViewUtil.convertToScreenPixels(width, adViewLayout.mDensity);
-	}
-	
 	@Override
 	public void handle() {
 		// TODO Auto-generated method stub
@@ -66,17 +50,27 @@ public class VponAdapter extends AdViewAdapter implements AdListener{
 		if (activity == null) {
 			return;
 		}
-		calcAdSize(adViewLayout);
+		// calcAdSize(adViewLayout);
 		try {
-			AdView adView = new AdView(activity, adWidth, adHeight);
-			boolean autoRefreshAd = false;
+			// VponBanner vponBanner = new VponBanner(activity, ration.key,
+			// VponAdSize.SMART_BANNER, VponPlatform.CN);
+			VpadnAdRequest adRequest = new VpadnAdRequest();
+			// 設定可以auto refresh去要banner
+			adRequest.setEnableAutoRefresh(true);
+
+			// AdView adView = new AdView(activity, adWidth, adHeight);
 			if (adViewLayout.adViewManager.bLocationForeign == false)
-				adView.setLicenseKey(ration.key, AdOnPlatform.CN, autoRefreshAd);
+				vponBanner = new VpadnBanner(activity, ration.key,
+						VpadnAdSize.SMART_BANNER, "CN");
+			// adView.setLicenseKey(ration.key, AdOnPlatform.CN, autoRefreshAd);
 			else
-				adView.setLicenseKey(ration.key, AdOnPlatform.TW, autoRefreshAd);	
-			adView.setAdListener(this);	
-			adViewLayout.AddSubView(adView);
-			
+				vponBanner = new VpadnBanner(activity, ration.key,
+						VpadnAdSize.SMART_BANNER, "TW");
+			// adView.setLicenseKey(ration.key, AdOnPlatform.TW, autoRefreshAd);
+			vponBanner.loadAd(adRequest);
+			vponBanner.setAdListener(this);
+			adViewLayout.AddSubView(vponBanner);
+
 		} catch (IllegalArgumentException e) {
 			adViewLayout.rollover();
 			return;
@@ -84,7 +78,13 @@ public class VponAdapter extends AdViewAdapter implements AdListener{
 	}
 
 	@Override
-	public void onFailedToRecevieAd(AdView arg0) {
+	public void onVpadnDismissScreen(VpadnAd arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onVpadnFailedToReceiveAd(VpadnAd arg0, VpadnErrorCode arg1) {
 		// TODO Auto-generated method stub
 		AdViewUtil.logInfo("Vpon fail");
 		arg0.setAdListener(null);
@@ -94,29 +94,36 @@ public class VponAdapter extends AdViewAdapter implements AdListener{
 			return;
 		}
 		super.onFailed(adViewLayout, ration);
-		  //adViewLayout.rotateThreadedPri(1);
-		
+		// adViewLayout.rotateThreadedPri(1);
 	}
 
 	@Override
-	public void onRecevieAd(AdView arg0) {
+	public void onVpadnLeaveApplication(VpadnAd arg0) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public void onVpadnPresentScreen(VpadnAd arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onVpadnReceiveAd(VpadnAd arg0) {
+		// TODO Auto-generated method stub
 		AdViewUtil.logInfo("Vpon success");
 		arg0.setAdListener(null);
-		
+
 		AdViewLayout adViewLayout = adViewLayoutReference.get();
 		if (adViewLayout == null) {
 			return;
 		}
 		super.onSuccessed(adViewLayout, ration);
-		adViewLayout.reportImpression();	
+		adViewLayout.reportImpression();
 		adViewLayout.adViewManager.resetRollover();
-		//adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0));
+		// adViewLayout.handler.post(new ViewAdRunnable(adViewLayout, arg0));
 		adViewLayout.rotateThreadedDelayed();
-		
 	}
-
-
 
 }

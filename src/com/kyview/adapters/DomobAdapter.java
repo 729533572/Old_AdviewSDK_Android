@@ -51,8 +51,9 @@ public class DomobAdapter extends AdViewAdapter implements DomobAdEventListener 
 		}
 		// Instantiate an ad view and add it to the view
 
-		DomobAdView ad = new DomobAdView(activity, ration.key, ration.key2,
-				DomobAdView.INLINE_SIZE_320X50,false);
+		DomobAdView ad = new DomobAdView(activity,ration.key, ration.key2, false);
+//				new DomobAdView(activity, ration.key, ration.key2,
+//				DomobAdView.INLINE_SIZE_320X50,false);
 		
 		// DomobAdManager.setPublisherId(ration.key);
 		/*

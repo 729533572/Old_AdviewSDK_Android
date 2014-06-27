@@ -1,6 +1,6 @@
 package com.kyview.adapters;
 
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Timer;
@@ -13,7 +13,7 @@ import com.kyview.util.AdViewReqManager;
 import com.kyview.util.AdViewUtil;
 
 public abstract class AdViewAdapter {
-	protected WeakReference<AdViewLayout> adViewLayoutReference;
+	protected SoftReference<AdViewLayout> adViewLayoutReference;
 	protected Ration ration;
 	static AdViewAdapter adapter, lastAdapter;
 	private Timer reqTimeListenerTimer;
@@ -34,7 +34,7 @@ public abstract class AdViewAdapter {
 	}
 
 	public void setParamters(AdViewLayout adViewLayout, Ration ration) {
-		this.adViewLayoutReference = new WeakReference<AdViewLayout>(
+		this.adViewLayoutReference = new SoftReference<AdViewLayout>(
 				adViewLayout);
 		this.ration = ration;
 	}

@@ -73,11 +73,11 @@ public class AdViewUtil {
 	// Don't change anything below this line
 	/***********************************************/
 
-	public static final int VERSION = 207;
+	public static final int VERSION = 212;
 
-	public static final String ADVIEW = "AdView SDK v2.0.7";
-	public static final String ADVIEW4YUNYUN = "FRADVIEW_2.0.7";
-	public static final String ADVIEW_VER = "2.0.7";
+	public static final String ADVIEW = "AdView SDK v2.1.2";
+	public static final String ADVIEW4YUNYUN = "FRADVIEW_2.1.2";
+	public static final String ADVIEW_VER = "2.1.2";
 
 	// Could be an enum, but this gives us a slight performance improvement
 	// abroad
@@ -128,6 +128,8 @@ public class AdViewUtil {
 	public static final int NETWORK_TYPE_ZHIDIAN = 58;
 
 	public static final int NETWORK_TYPE_GDT = 59;
+	
+	public static final int NETWORK_TYPE_O2OMOBI = 102;
 
 	public static final int NETWORK_TYPE_CUSTOMIZE = 999;
 
@@ -324,23 +326,23 @@ public class AdViewUtil {
 	/****************** Android的五种logcat输出的其中四种 *****************************/
 	public static void logWarn(String info, Throwable r) {
 		if (AdViewTargeting.getRunMode() == RunMode.TEST)
-			Log.w(AdViewUtil.ADVIEW, info, r);
+			Log.w(AdViewUtil.ADVIEW, info+"", r);
 	}
 
 	public static void logDebug(String info) {
 		if (AdViewTargeting.getRunMode() == RunMode.TEST)
-			Log.d(AdViewUtil.ADVIEW, info);
+			Log.d(AdViewUtil.ADVIEW, info+"");
 
 	}
 
 	public static void logError(String info, Throwable r) {
 		if (AdViewTargeting.getRunMode() == RunMode.TEST)
-			Log.e(AdViewUtil.ADVIEW, info, r);
+			Log.e(AdViewUtil.ADVIEW, info+"", r);
 	}
 
 	public static void logInfo(String info) {
 		if (AdViewTargeting.getRunMode() == RunMode.TEST)
-			Log.i(AdViewUtil.ADVIEW, info);
+			Log.i(AdViewUtil.ADVIEW, info+"");
 	}
 
 	public static void writeLogtoFile(String logName, boolean isPrintTime,
@@ -514,10 +516,10 @@ public class AdViewUtil {
 					byte[] buf = new byte[1024 * 8];
 					int ch = -1;
 
-					int count = 0;
+					// int count = 0;
 					while ((ch = is.read(buf)) != -1) {
 						fileOutputStream.write(buf, 0, ch);
-						count += ch;
+						// count += ch;
 					}
 					fileOutputStream.flush();
 					fileOutputStream.close();

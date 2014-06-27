@@ -1,6 +1,6 @@
 package com.kyview;
 
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.util.List;
 
 import android.app.Activity;
@@ -40,7 +40,7 @@ public class SingleModeTask extends AsyncTask<String, String, String> {
 			return null;
 		if (adViewLayout.adViewManager == null) {
 			adViewLayout.adViewManager = new AdViewManager(
-					new WeakReference<Context>(context), adViewLayout.keyAdView);
+					new SoftReference<Context>(context), adViewLayout.keyAdView);
 		}
 		rationList = adViewLayout.adViewManager.getRationList();
 		while (null == rationList) {

@@ -16,7 +16,6 @@ import com.kyview.adapters.AdwoAdapter;
 import com.kyview.adapters.AirAdAdapter;
 import com.kyview.adapters.AppMediaAdapter;
 import com.kyview.adapters.DomobAdapter;
-import com.kyview.adapters.DoubleClickAdapter;
 import com.kyview.adapters.EventAdapter;
 import com.kyview.adapters.FractalAdapter;
 import com.kyview.adapters.GdtAdapter;
@@ -30,6 +29,7 @@ import com.kyview.adapters.MillennialAdapter;
 import com.kyview.adapters.MobWinAdapter;
 import com.kyview.adapters.MobiSageAdapter;
 import com.kyview.adapters.MomarkAdapter;
+import com.kyview.adapters.O2omobiAdapter;
 import com.kyview.adapters.PunchBoxAdapter;
 import com.kyview.adapters.SmaatoAdapter;
 import com.kyview.adapters.SmartAdAdapter;
@@ -70,6 +70,7 @@ public class AdViewAdRegistry {
 	private void loadAdapters() {
 		try {AdViewHouseAdapter.load(this);}catch(Error e){}
 		try {AdBaiduAdapter.load(this);}catch(Error e){}
+		try {O2omobiAdapter.load(this);}catch(Error e){}
 		try {AdChinaAdapter.load(this);}catch(Error e){}
 		try {AdlantisAdapter.load(this);}catch(Error e){}
 		try {AdMobAdapter.load(this);}catch(Error e){}
@@ -79,7 +80,6 @@ public class AdViewAdRegistry {
 		try {AirAdAdapter.load(this);}catch(Error e){}
 		try {AppMediaAdapter.load(this);}catch(Error e){}
 		try {DomobAdapter.load(this);}catch(Error e){}
-		try {DoubleClickAdapter.load(this);}catch(Error e){}
 		try {EventAdapter.load(this);}catch(Error e){}
 		try {GdtAdapter.load(this);}catch(Error e){}
 		try {FractalAdapter.load(this);}catch(Error e){}

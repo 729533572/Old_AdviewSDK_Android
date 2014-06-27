@@ -46,7 +46,7 @@ public class AdChinaAdapter extends AdViewAdapter implements AdBannerListener {
 
 
 		AdManager.setRelateScreenRotate(adViewLayout.getContext(), true);
-		AdView mAdView = new AdView(adViewLayout.getContext(), ration.key,
+		AdView mAdView = new AdView(adViewLayout.activityReference.get(), ration.key,
 				true, false);
 		mAdView.setAdBannerListener(this);
 		mAdView.setAdRefreshTime(-1);
