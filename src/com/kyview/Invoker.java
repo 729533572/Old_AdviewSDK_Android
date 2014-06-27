@@ -27,7 +27,7 @@ import com.kyview.util.AdViewUtil;
 
 public class Invoker extends Activity implements AdViewInterface,
 		OnClickListener {
-	public AdViewLayout adViewLayout;
+	public static AdViewLayout adViewLayout;
 	public static LinearLayout layout;
 	// SDK201310111003303e4rx5msd7cn1pa
 	public static String sdkKey = "SDK201310111003303e4rx5msd7cn1pa";
